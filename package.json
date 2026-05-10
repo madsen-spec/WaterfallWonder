@@ -1,0 +1,15 @@
+{
+  "name": "waterfall-wonder-static-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plain static HTML/CSS/JavaScript website for Waterfall Wonder.",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/local-server.mjs",
+    "build": "node scripts/validate-site.mjs",
+    "validate": "node scripts/validate-site.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

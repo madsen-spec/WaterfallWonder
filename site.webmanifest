@@ -1,0 +1,16 @@
+{
+  "name": "Waterfall Wonder",
+  "short_name": "Waterfall Wonder",
+  "description": "Luxury Poconos cabin rental with waterfall views, hot tub, game room, fire pit, and dog-friendly stays.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141711",
+  "theme_color": "#141711",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
