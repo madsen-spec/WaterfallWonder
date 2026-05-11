@@ -122,7 +122,12 @@
         <span class="brand__mark" aria-hidden="true">W</span>
         <span class="brand__text">Waterfall Wonder</span>
       </a>
-      <nav class="primary-nav" aria-label="Primary navigation">
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Open site navigation">
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
         <a href="#waterfall">Waterfall</a>
         <a href="#reviews">Reviews</a>
         <a href="#stay">Stay</a>
@@ -195,23 +200,23 @@
         <div class="proof-band__inner">
           <article>
             <span>Book Direct</span>
-            <strong>WanderHome</strong>
-            <p>Primary booking path for dates, rules, fees, and availability.</p>
+            <strong>WanderHome Calendar</strong>
+            <p>Check available dates, stay rules, pet approval, and fees in one place.</p>
           </article>
           <article>
-            <span>Airbnb</span>
-            <strong>5.0</strong>
-            <p>Public listing reputation checked May 8, 2026.</p>
+            <span>Fewer Layers</span>
+            <strong>Manager Details</strong>
+            <p>Review house rules, Saw Creek registration, and arrival planning before you reserve.</p>
           </article>
           <article>
-            <span>Vrbo</span>
-            <strong>9.8/10</strong>
-            <p>Exceptional public review signal checked May 8, 2026.</p>
+            <span>Public Proof</span>
+            <strong>5.0 + 9.8/10</strong>
+            <p>Airbnb and Vrbo reputation signals were last checked May 11, 2026.</p>
           </article>
           <article>
-            <span>Stay Style</span>
+            <span>Stay Details</span>
             <strong>Waterfall + Hot Tub</strong>
-            <p>A rare Poconos setting with group-friendly amenities.</p>
+            <p>Use the direct page for current policies, amenity guidance, and availability.</p>
           </article>
         </div>
       </section>
@@ -222,17 +227,17 @@
             <p class="eyebrow eyebrow--dark">Guest reviews</p>
             <h2 id="reviews-title">Guests keep coming back to the waterfall.</h2>
             <p>Public Airbnb and Vrbo reviews point to the same things again and again: the sound of the falls, the stocked kitchen, the hot tub, the game room, and a house that works beautifully for families and groups.</p>
-            <div class="guest-reviews__stats" aria-label="Public review signals checked May 8, 2026">
+            <div class="guest-reviews__stats" aria-label="Public review signals checked May 11, 2026">
               <div>
                 <span>Airbnb</span>
                 <strong>5.0 / 52 reviews</strong>
               </div>
               <div>
                 <span>Vrbo</span>
-                <strong>9.8 / 158 reviews</strong>
+                <strong>9.8 / 150+ reviews</strong>
               </div>
             </div>
-            <p class="guest-reviews__note">Review counts and scores were checked on public Airbnb and Vrbo listings on May 8, 2026. Visit each platform for current totals and complete guest feedback.</p>
+            <p class="guest-reviews__note">Airbnb score and count were checked on May 11, 2026. Vrbo regional pages showed the same 9.8/10 score with varying public review-count displays; visit each platform for current totals and complete guest feedback.</p>
             <div class="guest-reviews__links" aria-label="Read full platform reviews">
               <a class="text-link" href="https://www.airbnb.com/rooms/1322697503906414464" target="_blank" rel="noopener noreferrer">Read Airbnb reviews</a>
               <a class="text-link" href="https://www.vrbo.com/4388577" target="_blank" rel="noopener noreferrer">Read Vrbo reviews</a>
@@ -364,24 +369,24 @@
         <div class="booking-confidence__inner">
           <div class="section__copy">
             <p class="eyebrow eyebrow--dark">Direct booking</p>
-            <h2 id="booking-title">Book where the stay details are easiest to review.</h2>
-            <p>WanderHome carries the booking calendar, stay policies, pet approval details, Saw Creek registration guidance, and house rules before you reserve Waterfall Wonder.</p>
+            <h2 id="booking-title">Book with the clearest path to the stay details.</h2>
+            <p>WanderHome is the clearest place to review the live booking calendar, stay policies, pet approval details, Saw Creek registration guidance, and house rules before you reserve Waterfall Wonder.</p>
           </div>
           <div class="booking-steps" aria-label="Direct booking advantages">
             <article>
               <span>01</span>
-              <h3>Availability and terms</h3>
-              <p>Review dates and reservation details directly with the manager.</p>
+              <h3>Current availability</h3>
+              <p>Check open dates, fees, and reservation terms through the direct booking page.</p>
             </article>
             <article>
               <span>02</span>
-              <h3>What to review before booking</h3>
-              <p>Review rental agreement timing, pet approval, community registration, waterfall guidance, and seasonal rules before booking.</p>
+              <h3>Stay-specific rules</h3>
+              <p>Review pet approval, community registration, waterfall guidance, and seasonal rules before booking.</p>
             </article>
             <article>
               <span>03</span>
-              <h3>Platform options</h3>
-              <p>Prefer Airbnb or Vrbo? Those links remain available too.</p>
+              <h3>Platform options remain</h3>
+              <p>Prefer Airbnb or Vrbo? Those links stay available for guests who want a platform booking.</p>
             </article>
           </div>
           <a class="button button--primary" href="https://www.gowanderhome.com/pocono-cabin-rentals/waterfall-wonder-(poconos)" target="_blank" rel="noopener noreferrer">
@@ -403,8 +408,8 @@
           </div>
           <figure class="feature-media">
             <picture>
-              <source type="image/webp" srcset="assets/images/living-room-window-wall-800.webp 800w, assets/images/living-room-window-wall-1200.webp 1200w, assets/images/living-room-window-wall-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 50vw">
-              <img src="assets/images/living-room-window-wall-1200.jpg" srcset="assets/images/living-room-window-wall-800.jpg 800w, assets/images/living-room-window-wall-1200.jpg 1200w, assets/images/living-room-window-wall-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 50vw" width="1200" height="800" alt="Waterfall Wonder living room with vaulted ceiling, stone fireplace, and forest-facing windows." loading="lazy" decoding="async">
+              <source type="image/webp" srcset="assets/images/living-room-window-wall-800.webp 800w, assets/images/living-room-window-wall-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 50vw">
+              <img src="assets/images/living-room-window-wall-1200.jpg" srcset="assets/images/living-room-window-wall-800.jpg 800w, assets/images/living-room-window-wall-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 50vw" width="1200" height="800" alt="Waterfall Wonder living room with vaulted ceiling, stone fireplace, and forest-facing windows." loading="lazy" decoding="async">
             </picture>
             <figcaption>The living room brings the forest view into the center of the house.</figcaption>
           </figure>
@@ -422,36 +427,36 @@
             <div class="waterfall-carousel__viewport">
               <figure class="waterfall-carousel__slide is-active" data-carousel-slide aria-label="1 of 5">
                 <picture>
-                  <source type="image/webp" srcset="assets/images/carousel-waterfall-close-800.webp 800w, assets/images/carousel-waterfall-close-1200.webp 1200w, assets/images/carousel-waterfall-close-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 65vw">
-                  <img src="assets/images/carousel-waterfall-close-1200.jpg" srcset="assets/images/carousel-waterfall-close-800.jpg 800w, assets/images/carousel-waterfall-close-1200.jpg 1200w, assets/images/carousel-waterfall-close-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Close view of the natural waterfall cascading over layered rock near Waterfall Wonder." loading="lazy" decoding="async">
+                  <source type="image/webp" srcset="assets/images/carousel-waterfall-close-800.webp 800w, assets/images/carousel-waterfall-close-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 65vw">
+                  <img src="assets/images/carousel-waterfall-close-1200.jpg" srcset="assets/images/carousel-waterfall-close-800.jpg 800w, assets/images/carousel-waterfall-close-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Close view of the natural waterfall cascading over layered rock near Waterfall Wonder." loading="lazy" decoding="async">
                 </picture>
                 <figcaption><span>Close waterfall study</span>The falls in their most intimate, textural view.</figcaption>
               </figure>
               <figure class="waterfall-carousel__slide" data-carousel-slide aria-label="2 of 5" aria-hidden="true">
                 <picture>
-                  <source type="image/webp" srcset="assets/images/carousel-waterfall-wide-800.webp 800w, assets/images/carousel-waterfall-wide-1200.webp 1200w, assets/images/carousel-waterfall-wide-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 65vw">
-                  <img src="assets/images/carousel-waterfall-wide-1200.jpg" srcset="assets/images/carousel-waterfall-wide-800.jpg 800w, assets/images/carousel-waterfall-wide-1200.jpg 1200w, assets/images/carousel-waterfall-wide-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Wide view of the natural waterfall and plunge pool in the Poconos forest." loading="lazy" decoding="async">
+                  <source type="image/webp" srcset="assets/images/carousel-waterfall-wide-800.webp 800w, assets/images/carousel-waterfall-wide-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 65vw">
+                  <img src="assets/images/carousel-waterfall-wide-1200.jpg" srcset="assets/images/carousel-waterfall-wide-800.jpg 800w, assets/images/carousel-waterfall-wide-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Wide view of the natural waterfall and plunge pool in the Poconos forest." loading="lazy" decoding="async">
                 </picture>
                 <figcaption><span>Wide waterfall view</span>A fuller look at the creek, ledges, and plunge pool.</figcaption>
               </figure>
               <figure class="waterfall-carousel__slide" data-carousel-slide aria-label="3 of 5" aria-hidden="true">
                 <picture>
-                  <source type="image/webp" srcset="assets/images/carousel-drone-waterfall-800.webp 800w, assets/images/carousel-drone-waterfall-1200.webp 1200w, assets/images/carousel-drone-waterfall-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 65vw">
-                  <img src="assets/images/carousel-drone-waterfall-1200.jpg" srcset="assets/images/carousel-drone-waterfall-800.jpg 800w, assets/images/carousel-drone-waterfall-1200.jpg 1200w, assets/images/carousel-drone-waterfall-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Drone view looking down at the Waterfall Wonder waterfall surrounded by summer forest." loading="lazy" decoding="async">
+                  <source type="image/webp" srcset="assets/images/carousel-drone-waterfall-800.webp 800w, assets/images/carousel-drone-waterfall-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 65vw">
+                  <img src="assets/images/carousel-drone-waterfall-1200.jpg" srcset="assets/images/carousel-drone-waterfall-800.jpg 800w, assets/images/carousel-drone-waterfall-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Drone view looking down at the Waterfall Wonder waterfall surrounded by summer forest." loading="lazy" decoding="async">
                 </picture>
                 <figcaption><span>Waterfall from above</span>An overhead view that shows the water moving through the forest.</figcaption>
               </figure>
               <figure class="waterfall-carousel__slide" data-carousel-slide aria-label="4 of 5" aria-hidden="true">
                 <picture>
-                  <source type="image/webp" srcset="assets/images/carousel-house-waterfall-aerial-800.webp 800w, assets/images/carousel-house-waterfall-aerial-1200.webp 1200w, assets/images/carousel-house-waterfall-aerial-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 65vw">
-                  <img src="assets/images/carousel-house-waterfall-aerial-1200.jpg" srcset="assets/images/carousel-house-waterfall-aerial-800.jpg 800w, assets/images/carousel-house-waterfall-aerial-1200.jpg 1200w, assets/images/carousel-house-waterfall-aerial-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Aerial view showing Waterfall Wonder beside the creek and waterfall in dense green forest." loading="lazy" decoding="async">
+                  <source type="image/webp" srcset="assets/images/carousel-house-waterfall-aerial-800.webp 800w, assets/images/carousel-house-waterfall-aerial-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 65vw">
+                  <img src="assets/images/carousel-house-waterfall-aerial-1200.jpg" srcset="assets/images/carousel-house-waterfall-aerial-800.jpg 800w, assets/images/carousel-house-waterfall-aerial-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Aerial view showing Waterfall Wonder beside the creek and waterfall in dense green forest." loading="lazy" decoding="async">
                 </picture>
                 <figcaption><span>House and falls</span>The cabin and waterfall share the same forested ravine.</figcaption>
               </figure>
               <figure class="waterfall-carousel__slide" data-carousel-slide aria-label="5 of 5" aria-hidden="true">
                 <picture>
-                  <source type="image/webp" srcset="assets/images/carousel-window-waterfall-view-800.webp 800w, assets/images/carousel-window-waterfall-view-1200.webp 1200w, assets/images/carousel-window-waterfall-view-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 65vw">
-                  <img src="assets/images/carousel-window-waterfall-view-1200.jpg" srcset="assets/images/carousel-window-waterfall-view-800.jpg 800w, assets/images/carousel-window-waterfall-view-1200.jpg 1200w, assets/images/carousel-window-waterfall-view-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Waterfall and creek view from a window nook inside Waterfall Wonder." loading="lazy" decoding="async">
+                  <source type="image/webp" srcset="assets/images/carousel-window-waterfall-view-800.webp 800w, assets/images/carousel-window-waterfall-view-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 65vw">
+                  <img src="assets/images/carousel-window-waterfall-view-1200.jpg" srcset="assets/images/carousel-window-waterfall-view-800.jpg 800w, assets/images/carousel-window-waterfall-view-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 65vw" width="1200" height="800" alt="Waterfall and creek view from a window nook inside Waterfall Wonder." loading="lazy" decoding="async">
                 </picture>
                 <figcaption><span>Window-waterfall view</span>The setting is visible from inside the home, not only outdoors.</figcaption>
               </figure>
@@ -565,7 +570,7 @@
             <figcaption>The waterfall setting</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/exterior-dusk-decks-1800.jpg" data-caption="Exterior decks glowing at dusk." aria-label="Open exterior deck photo">
+            <button class="gallery-button" type="button" data-full="assets/images/exterior-dusk-decks-1200.jpg" data-caption="Exterior decks glowing at dusk." aria-label="Open exterior deck photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/exterior-dusk-decks-800.webp 800w, assets/images/exterior-dusk-decks-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/exterior-dusk-decks-1200.jpg" srcset="assets/images/exterior-dusk-decks-800.jpg 800w, assets/images/exterior-dusk-decks-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Exterior decks of the Poconos cabin glowing at dusk." loading="lazy" decoding="async">
@@ -574,7 +579,7 @@
             <figcaption>Arrival at dusk</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/waterfall-wide-1800.jpg" data-caption="Wide view of the natural waterfall and creek." aria-label="Open waterfall wide photo">
+            <button class="gallery-button" type="button" data-full="assets/images/waterfall-wide-1200.jpg" data-caption="Wide view of the natural waterfall and creek." aria-label="Open waterfall wide photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/waterfall-wide-800.webp 800w, assets/images/waterfall-wide-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/waterfall-wide-1200.jpg" srcset="assets/images/waterfall-wide-800.jpg 800w, assets/images/waterfall-wide-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Wide view of the natural waterfall and creek near Waterfall Wonder." loading="lazy" decoding="async">
@@ -583,7 +588,7 @@
             <figcaption>Natural waterfall</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/living-room-window-wall-1800.jpg" data-caption="Living room window wall and stone fireplace at Waterfall Wonder." aria-label="Open living room photo">
+            <button class="gallery-button" type="button" data-full="assets/images/living-room-window-wall-1200.jpg" data-caption="Living room window wall and stone fireplace at Waterfall Wonder." aria-label="Open living room photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/living-room-window-wall-800.webp 800w, assets/images/living-room-window-wall-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/living-room-window-wall-1200.jpg" srcset="assets/images/living-room-window-wall-800.jpg 800w, assets/images/living-room-window-wall-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Living room with vaulted ceiling, stone fireplace, and forest-facing windows." loading="lazy" decoding="async">
@@ -592,7 +597,7 @@
             <figcaption>Window wall living room</figcaption>
           </figure>
           <figure class="gallery-item gallery-item--tall">
-            <button class="gallery-button" type="button" data-full="assets/images/screened-deck-dining-1800.jpg" data-caption="Screened deck dining at Waterfall Wonder." aria-label="Open screened deck dining photo">
+            <button class="gallery-button" type="button" data-full="assets/images/screened-deck-dining-1200.jpg" data-caption="Screened deck dining at Waterfall Wonder." aria-label="Open screened deck dining photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/screened-deck-dining-800.webp 800w, assets/images/screened-deck-dining-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/screened-deck-dining-1200.jpg" srcset="assets/images/screened-deck-dining-800.jpg 800w, assets/images/screened-deck-dining-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Screened deck dining area with forest views." loading="lazy" decoding="async">
@@ -601,7 +606,7 @@
             <figcaption>Screened dining deck</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/kitchen-island-1800.jpg" data-caption="Kitchen island and dining-ready prep space." aria-label="Open kitchen photo">
+            <button class="gallery-button" type="button" data-full="assets/images/kitchen-island-1200.jpg" data-caption="Kitchen island and dining-ready prep space." aria-label="Open kitchen photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/kitchen-island-800.webp 800w, assets/images/kitchen-island-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/kitchen-island-1200.jpg" srcset="assets/images/kitchen-island-800.jpg 800w, assets/images/kitchen-island-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Kitchen island with modern finishes and gathering space." loading="lazy" decoding="async">
@@ -610,7 +615,7 @@
             <figcaption>Kitchen island</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/primary-bedroom-1800.jpg" data-caption="Primary bedroom at Waterfall Wonder." aria-label="Open primary bedroom photo">
+            <button class="gallery-button" type="button" data-full="assets/images/primary-bedroom-1200.jpg" data-caption="Primary bedroom at Waterfall Wonder." aria-label="Open primary bedroom photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/primary-bedroom-800.webp 800w, assets/images/primary-bedroom-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/primary-bedroom-1200.jpg" srcset="assets/images/primary-bedroom-800.jpg 800w, assets/images/primary-bedroom-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Primary bedroom with warm neutral bedding and forest-house styling." loading="lazy" decoding="async">
@@ -619,7 +624,7 @@
             <figcaption>Primary bedroom</figcaption>
           </figure>
           <figure class="gallery-item gallery-item--wide">
-            <button class="gallery-button" type="button" data-full="assets/images/game-room-wide-1800.jpg" data-caption="Game room with pool table and arcade-style entertainment." aria-label="Open game room photo">
+            <button class="gallery-button" type="button" data-full="assets/images/game-room-wide-1200.jpg" data-caption="Game room with pool table and arcade-style entertainment." aria-label="Open game room photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/game-room-wide-800.webp 800w, assets/images/game-room-wide-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 50vw">
                 <img src="assets/images/game-room-wide-1200.jpg" srcset="assets/images/game-room-wide-800.jpg 800w, assets/images/game-room-wide-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 50vw" width="1200" height="800" alt="Game room with pool table, lounge seating, and arcade-style entertainment." loading="lazy" decoding="async">
@@ -628,7 +633,7 @@
             <figcaption>Game room</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/hot-tub-exterior-1800.jpg" data-caption="Outdoor hot tub at Waterfall Wonder." aria-label="Open hot tub photo">
+            <button class="gallery-button" type="button" data-full="assets/images/hot-tub-exterior-1200.jpg" data-caption="Outdoor hot tub at Waterfall Wonder." aria-label="Open hot tub photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/hot-tub-exterior-800.webp 800w, assets/images/hot-tub-exterior-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/hot-tub-exterior-1200.jpg" srcset="assets/images/hot-tub-exterior-800.jpg 800w, assets/images/hot-tub-exterior-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="800" alt="Outdoor hot tub area at the Poconos cabin." loading="lazy" decoding="async">
@@ -637,7 +642,7 @@
             <figcaption>Hot tub setting</figcaption>
           </figure>
           <figure class="gallery-item">
-            <button class="gallery-button" type="button" data-full="assets/images/firepit-winter-seating-1800.jpg" data-caption="Fire pit seating at Waterfall Wonder in the winter woods." aria-label="Open fire pit seating photo">
+            <button class="gallery-button" type="button" data-full="assets/images/firepit-winter-seating-1200.jpg" data-caption="Fire pit seating at Waterfall Wonder in the winter woods." aria-label="Open fire pit seating photo">
               <picture>
                 <source type="image/webp" srcset="assets/images/firepit-winter-seating-800.webp 800w, assets/images/firepit-winter-seating-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 25vw">
                 <img src="assets/images/firepit-winter-seating-1200.jpg" srcset="assets/images/firepit-winter-seating-800.jpg 800w, assets/images/firepit-winter-seating-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 25vw" width="1200" height="801" alt="Fire pit seating at Waterfall Wonder with chairs, blankets, and winter woods." loading="lazy" decoding="async">
@@ -688,8 +693,8 @@
         <div class="split split--reverse">
           <figure class="feature-media">
             <picture>
-              <source type="image/webp" srcset="assets/images/primary-bedroom-800.webp 800w, assets/images/primary-bedroom-1200.webp 1200w, assets/images/primary-bedroom-1800.webp 1800w" sizes="(max-width: 900px) 100vw, 50vw">
-              <img src="assets/images/primary-bedroom-1200.jpg" srcset="assets/images/primary-bedroom-800.jpg 800w, assets/images/primary-bedroom-1200.jpg 1200w, assets/images/primary-bedroom-1800.jpg 1800w" sizes="(max-width: 900px) 100vw, 50vw" width="1200" height="800" alt="Primary bedroom with warm bedding at Waterfall Wonder." loading="lazy" decoding="async">
+              <source type="image/webp" srcset="assets/images/primary-bedroom-800.webp 800w, assets/images/primary-bedroom-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 50vw">
+              <img src="assets/images/primary-bedroom-1200.jpg" srcset="assets/images/primary-bedroom-800.jpg 800w, assets/images/primary-bedroom-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 50vw" width="1200" height="800" alt="Primary bedroom with warm bedding at Waterfall Wonder." loading="lazy" decoding="async">
             </picture>
             <figcaption>Sleeping spaces are styled for rest after full Poconos days.</figcaption>
           </figure>
@@ -765,8 +770,8 @@
         </div>
         <figure class="banner-media">
           <picture>
-              <source type="image/webp" srcset="assets/images/exterior-dusk-decks-800.webp 800w, assets/images/exterior-dusk-decks-1200.webp 1200w, assets/images/exterior-dusk-decks-1800.webp 1800w" sizes="100vw">
-              <img src="assets/images/exterior-dusk-decks-1800.jpg" srcset="assets/images/exterior-dusk-decks-800.jpg 800w, assets/images/exterior-dusk-decks-1200.jpg 1200w, assets/images/exterior-dusk-decks-1800.jpg 1800w" sizes="100vw" width="1800" height="1200" alt="Exterior decks of the Poconos cabin glowing at dusk." loading="lazy" decoding="async">
+              <source type="image/webp" srcset="assets/images/exterior-dusk-decks-800.webp 800w, assets/images/exterior-dusk-decks-1200.webp 1200w" sizes="100vw">
+              <img src="assets/images/exterior-dusk-decks-1200.jpg" srcset="assets/images/exterior-dusk-decks-800.jpg 800w, assets/images/exterior-dusk-decks-1200.jpg 1200w" sizes="100vw" width="1800" height="1200" alt="Exterior decks of the Poconos cabin glowing at dusk." loading="lazy" decoding="async">
           </picture>
         </figure>
       </section>
@@ -814,66 +819,83 @@
           <div>
             <p class="eyebrow eyebrow--dark">Local guide</p>
             <h2 id="local-guide-title">Explore near Waterfall Wonder.</h2>
-            <p>Plan the day around waterfalls, family outings, winter slopes, rainy-day backups, and date-night food without losing the reason to book direct: the cabin is still the destination.</p>
+            <p>Choose one good outing, keep a weather backup in mind, and leave room for the reason guests book the house: waterfall views, the hot tub, the game room, and unhurried cabin time.</p>
           </div>
           <a class="text-link" href="things-to-do-near-winona-falls/index.html">Open the Local Guide</a>
         </div>
-        <div class="local-explore-grid" aria-label="Waterfall Wonder local guide pages">
-          <a class="local-explore-card" href="things-to-do-near-winona-falls/index.html">
-            <span>Master guide</span>
-            <h3>Things to do near Winona Falls</h3>
-            <p>A clean starting point for first-time guests planning waterfalls, towns, food, family fun, and weather backups.</p>
-          </a>
-          <a class="local-explore-card" href="outdoors/waterfalls-near-winona-falls/index.html">
-            <span>Waterfalls</span>
-            <h3>Waterfalls near Winona Falls</h3>
-            <p>Bushkill Falls, NPS waterfall notes, current Dingmans status cautions, and rounded drive bands.</p>
-          </a>
-          <a class="local-explore-card" href="family-fun/index.html">
-            <span>Family</span>
-            <h3>Family things to do near Bushkill</h3>
-            <p>Nature centers, museums, animal encounters, indoor waterparks, and easy plans for kids and teens.</p>
-          </a>
-          <a class="local-explore-card" href="winter-fun/index.html">
-            <span>Winter</span>
-            <h3>Winter fun near Waterfall Wonder</h3>
-            <p>Shawnee, Camelback, indoor waterparks, cinema nights, and hot-tub-friendly winter backups.</p>
-          </a>
-          <a class="local-explore-card" href="guest-guide/rainy-day-plan/index.html">
-            <span>Rainy day</span>
-            <h3>Rainy-day things to do near Bushkill</h3>
-            <p>A practical plan for wet-weather outings, indoor stops, dinner ideas, and cabin downtime.</p>
-          </a>
-          <a class="local-explore-card" href="guest-guide/sample-weekend-plan/index.html">
-            <span>Weekend plan</span>
-            <h3>Sample Poconos weekend plan</h3>
-            <p>A simple weekend outline for one main outing, time at the cabin, rainy-day backups, and an easier checkout morning.</p>
-          </a>
-          <a class="local-explore-card" href="guest-guide/safety-and-access-notes/index.html">
-            <span>Safety</span>
-            <h3>Guest safety and access notes</h3>
-            <p>Waterfall terrain, winter roads, burn rules, Saw Creek access, pet approvals, and seasonal amenity planning.</p>
-          </a>
-          <a class="local-explore-card" href="pet-friendly-poconos-cabin/index.html">
-            <span>Dog-friendly</span>
-            <h3>Pet-friendly Poconos cabin</h3>
-            <p>Dog approval, pet limits, house rules, hot tub restrictions, cleanup expectations, and booking-policy notes.</p>
-          </a>
-          <a class="local-explore-card" href="large-group-poconos-cabin/index.html">
-            <span>Group stays</span>
-            <h3>Large-group Poconos cabin</h3>
-            <p>Plan around 12 guests, sleeping layout, game room time, common areas, parking logistics, and booking notes.</p>
-          </a>
-          <a class="local-explore-card" href="waterfall-cabin-near-bushkill-falls/index.html">
-            <span>Waterfall stay</span>
-            <h3>Waterfall cabin near Bushkill Falls</h3>
-            <p>Clearly separate the property waterfall setting from the public Bushkill Falls attraction nearby.</p>
-          </a>
-          <a class="local-explore-card" href="food-drink/breweries-wineries-and-date-night/index.html">
-            <span>Food and drink</span>
-            <h3>Breweries, wineries, and date nights</h3>
-            <p>ShawneeCraft, Sango Kura, Mountain View, Stroudsburg, Frogtown, and adults-only resort ideas.</p>
-          </a>
+        <div class="local-explore-groups" aria-label="Waterfall Wonder local guide pages">
+          <section class="local-explore-group" aria-labelledby="local-plan-title">
+            <h3 id="local-plan-title">Plan the stay</h3>
+            <div class="local-explore-grid">
+              <a class="local-explore-card" href="things-to-do-near-winona-falls/index.html">
+                <span>Master guide</span>
+                <h4>Things to do near Winona Falls</h4>
+                <p>A starting point for waterfalls, towns, food, family fun, and weather backups.</p>
+              </a>
+              <a class="local-explore-card" href="guest-guide/sample-weekend-plan/index.html">
+                <span>Weekend plan</span>
+                <h4>Sample Poconos weekend plan</h4>
+                <p>One main outing, real time at the cabin, rainy-day backups, and an easier checkout morning.</p>
+              </a>
+              <a class="local-explore-card" href="guest-guide/safety-and-access-notes/index.html">
+                <span>Safety</span>
+                <h4>Guest safety and access notes</h4>
+                <p>Waterfall terrain, winter roads, burn rules, Saw Creek access, pets, and seasonal amenities.</p>
+              </a>
+            </div>
+          </section>
+
+          <section class="local-explore-group" aria-labelledby="local-nearby-title">
+            <h3 id="local-nearby-title">Explore nearby</h3>
+            <div class="local-explore-grid">
+              <a class="local-explore-card" href="outdoors/waterfalls-near-winona-falls/index.html">
+                <span>Waterfalls</span>
+                <h4>Waterfalls near Winona Falls</h4>
+                <p>Bushkill Falls, NPS waterfall notes, Dingmans status cautions, and rounded drive bands.</p>
+              </a>
+              <a class="local-explore-card" href="family-fun/index.html">
+                <span>Family</span>
+                <h4>Family things to do near Bushkill</h4>
+                <p>Nature centers, museums, animal encounters, indoor waterparks, and easy kid-friendly plans.</p>
+              </a>
+              <a class="local-explore-card" href="winter-fun/index.html">
+                <span>Winter</span>
+                <h4>Winter fun near Waterfall Wonder</h4>
+                <p>Shawnee, Camelback, indoor waterparks, cinema nights, and hot-tub-friendly winter backups.</p>
+              </a>
+              <a class="local-explore-card" href="guest-guide/rainy-day-plan/index.html">
+                <span>Rainy day</span>
+                <h4>Rainy-day things to do near Bushkill</h4>
+                <p>Wet-weather outings, indoor stops, dinner ideas, and cabin downtime that still feels planned.</p>
+              </a>
+              <a class="local-explore-card" href="food-drink/breweries-wineries-and-date-night/index.html">
+                <span>Food and drink</span>
+                <h4>Breweries, wineries, and date nights</h4>
+                <p>ShawneeCraft, Sango Kura, Mountain View, Stroudsburg, Frogtown, and adults-only resort ideas.</p>
+              </a>
+            </div>
+          </section>
+
+          <section class="local-explore-group" aria-labelledby="local-fit-title">
+            <h3 id="local-fit-title">Choose the right fit</h3>
+            <div class="local-explore-grid">
+              <a class="local-explore-card" href="pet-friendly-poconos-cabin/index.html">
+                <span>Dog-friendly</span>
+                <h4>Pet-friendly Poconos cabin</h4>
+                <p>Dog approval, pet limits, house rules, hot tub restrictions, cleanup expectations, and policy notes.</p>
+              </a>
+              <a class="local-explore-card" href="large-group-poconos-cabin/index.html">
+                <span>Group stays</span>
+                <h4>Large-group Poconos cabin</h4>
+                <p>Plan around 12 guests, six beds, game-room time, common areas, parking logistics, and booking notes.</p>
+              </a>
+              <a class="local-explore-card" href="waterfall-cabin-near-bushkill-falls/index.html">
+                <span>Waterfall stay</span>
+                <h4>Waterfall cabin near Bushkill Falls</h4>
+                <p>Separate the property waterfall setting from the public Bushkill Falls attraction nearby.</p>
+              </a>
+            </div>
+          </section>
         </div>
       </section>
 

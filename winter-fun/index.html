@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -111,7 +111,12 @@
         <span class="brand__mark" aria-hidden="true">W</span>
         <span class="brand__text">Waterfall Wonder</span>
       </a>
-      <nav class="primary-nav" aria-label="Primary navigation">
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Open site navigation">
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
         <a href="../index.html#waterfall">Waterfall</a>
         <a href="../index.html#stay">Stay</a>
         <a href="../index.html#gallery">Gallery</a>
@@ -304,7 +309,7 @@
             <li>21 plus</li><li>spa</li><li>date night</li><li>adults</li>
           </ul>
           <dl class="guide-card__decision" aria-label="How to choose Mount Airy Casino Resort">
-            <div><dt>Best for</dt><dd>Adults who want dinner, spa, casino, or a more polished night out.</dd></div>
+            <div><dt>Best for</dt><dd>Adults who want dinner, spa, casino, or a more dressed-up night out.</dd></div>
             <div><dt>Skip if</dt><dd>The group includes kids or wants a cabin-centered evening.</dd></div>
             <div><dt>Pair with</dt><dd>A lighter daytime plan so the evening does not feel rushed.</dd></div>
           </dl>
@@ -414,8 +419,8 @@
 
       <section class="final-cta" aria-labelledby="final-cta-title">
         <picture class="final-cta__picture">
-          <source type="image/webp" srcset="../assets/images/firepit-winter-seating-800.webp 800w, ../assets/images/firepit-winter-seating-1200.webp 1200w, ../assets/images/firepit-winter-seating-1800.webp 1800w" sizes="100vw">
-          <img src="../assets/images/firepit-winter-seating-1800.jpg" srcset="../assets/images/firepit-winter-seating-800.jpg 800w, ../assets/images/firepit-winter-seating-1200.jpg 1200w, ../assets/images/firepit-winter-seating-1800.jpg 1800w" sizes="100vw" width="1800" height="1201" alt="Fire pit seating at Waterfall Wonder with blankets and winter woods around the cabin." loading="lazy" decoding="async">
+          <source type="image/webp" srcset="../assets/images/firepit-winter-seating-800.webp 800w, ../assets/images/firepit-winter-seating-1200.webp 1200w" sizes="100vw">
+          <img src="../assets/images/firepit-winter-seating-1200.jpg" srcset="../assets/images/firepit-winter-seating-800.jpg 800w, ../assets/images/firepit-winter-seating-1200.jpg 1200w" sizes="100vw" width="1800" height="1201" alt="Fire pit seating at Waterfall Wonder with blankets and winter woods around the cabin." loading="lazy" decoding="async">
         </picture>
         <div class="final-cta__shade" aria-hidden="true"></div>
         <div class="final-cta__content">

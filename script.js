@@ -4,6 +4,8 @@
   var dialogImage = document.querySelector("[data-lightbox-image]");
   var dialogCaption = document.querySelector("[data-lightbox-caption]");
   var closeButton = document.querySelector("[data-lightbox-close]");
+  var navToggle = document.querySelector("[data-nav-toggle]");
+  var primaryNav = document.querySelector("#primary-nav");
   var lastTrigger = null;
 
   function updateHeader() {
@@ -15,6 +17,36 @@
 
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
+
+  function setNavOpen(isOpen) {
+    if (!header || !navToggle) {
+      return;
+    }
+
+    header.classList.toggle("is-nav-open", isOpen);
+    navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    navToggle.setAttribute("aria-label", isOpen ? "Close site navigation" : "Open site navigation");
+  }
+
+  if (navToggle) {
+    navToggle.addEventListener("click", function () {
+      setNavOpen(!header.classList.contains("is-nav-open"));
+    });
+  }
+
+  if (primaryNav) {
+    primaryNav.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        setNavOpen(false);
+      });
+    });
+  }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      setNavOpen(false);
+    }
+  });
 
   function openLightbox(button) {
     if (!dialog || !dialogImage || !dialogCaption) {

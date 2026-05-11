@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -110,7 +110,12 @@
         <span class="brand__mark" aria-hidden="true">W</span>
         <span class="brand__text">Waterfall Wonder</span>
       </a>
-      <nav class="primary-nav" aria-label="Primary navigation">
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Open site navigation">
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
         <a href="../index.html#waterfall">Waterfall</a>
         <a href="../index.html#stay">Stay</a>
         <a href="../index.html#gallery">Gallery</a>
@@ -129,7 +134,7 @@
       <section class="hero guide-hero" id="top" aria-labelledby="hero-title">
         <picture class="hero__picture">
           <source type="image/webp" srcset="../assets/images/game-room-wide-800.webp 800w, ../assets/images/game-room-wide-1200.webp 1200w" sizes="100vw">
-          <img src="../assets/images/game-room-wide-1800.jpg" srcset="../assets/images/game-room-wide-800.jpg 800w, ../assets/images/game-room-wide-1200.jpg 1200w, ../assets/images/game-room-wide-1800.jpg 1800w" sizes="100vw" width="1800" height="1200" alt="Game room at Waterfall Wonder set up for families and group downtime." fetchpriority="high" decoding="async">
+          <img src="../assets/images/game-room-wide-1200.jpg" srcset="../assets/images/game-room-wide-800.jpg 800w, ../assets/images/game-room-wide-1200.jpg 1200w" sizes="100vw" width="1800" height="1200" alt="Game room at Waterfall Wonder set up for families and group downtime." fetchpriority="high" decoding="async">
         </picture>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__content guide-hero__content">
@@ -241,7 +246,7 @@
           </ul>
           <dl class="guide-card__decision" aria-label="How to choose Pocono Snake and Animal Farm">
             <div><dt>Best for</dt><dd>Younger kids who want animals and a simple outing.</dd></div>
-            <div><dt>Skip if</dt><dd>Your group needs a polished indoor backup or guaranteed bad-weather plan.</dd></div>
+            <div><dt>Skip if</dt><dd>Your group needs an indoor backup or a plan that works in steady bad weather.</dd></div>
             <div><dt>Pair with</dt><dd>A low-key afternoon at the house.</dd></div>
           </dl>
           <p class="guide-card__note">Because this is a smaller seasonal stop, look at the day&#x27;s hours before loading everyone into the car.</p>
@@ -421,8 +426,8 @@
 
       <section class="final-cta" aria-labelledby="final-cta-title">
         <picture class="final-cta__picture">
-          <source type="image/webp" srcset="../assets/images/game-room-arcade-fireplace-800.webp 800w, ../assets/images/game-room-arcade-fireplace-1200.webp 1200w, ../assets/images/game-room-arcade-fireplace-1800.webp 1800w" sizes="100vw">
-          <img src="../assets/images/game-room-arcade-fireplace-1800.jpg" srcset="../assets/images/game-room-arcade-fireplace-800.jpg 800w, ../assets/images/game-room-arcade-fireplace-1200.jpg 1200w, ../assets/images/game-room-arcade-fireplace-1800.jpg 1800w" sizes="100vw" width="1800" height="1199" alt="Game room at Waterfall Wonder with arcade-style entertainment, fireplace, and lounge space." loading="lazy" decoding="async">
+          <source type="image/webp" srcset="../assets/images/game-room-arcade-fireplace-800.webp 800w, ../assets/images/game-room-arcade-fireplace-1200.webp 1200w" sizes="100vw">
+          <img src="../assets/images/game-room-arcade-fireplace-1200.jpg" srcset="../assets/images/game-room-arcade-fireplace-800.jpg 800w, ../assets/images/game-room-arcade-fireplace-1200.jpg 1200w" sizes="100vw" width="1800" height="1199" alt="Game room at Waterfall Wonder with arcade-style entertainment, fireplace, and lounge space." loading="lazy" decoding="async">
         </picture>
         <div class="final-cta__shade" aria-hidden="true"></div>
         <div class="final-cta__content">
