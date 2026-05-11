@@ -15,6 +15,8 @@ The site is made from ordinary files:
 - `assets/images/` for optimized public website images.
 - `robots.txt` and `sitemap.xml` for search engines.
 - `404.html` for a static-hosting not-found page.
+- `CNAME` and `.nojekyll` for GitHub Pages custom-domain publishing.
+- `CONTENT_SOURCES.md` and `MAINTENANCE_CHECKLIST.md` for public-content upkeep.
 
 ## What Is Included
 
@@ -44,7 +46,7 @@ There is no framework build step. The build command runs a validation check for 
 npm run build
 ```
 
-The validation checks required files, local image/script/style links, JSON-LD blocks, and the sitemap shape. A passing build means the static package is ready to upload or publish.
+The validation checks required files, local image/script/style links, JSON-LD blocks, sitemap shape, image dimensions, sitemap/page coverage, asset weight warnings, freshness dates, and domain alignment. A passing build means the static package is ready to upload or publish after human launch review.
 
 ## Publish Or Update
 
@@ -60,21 +62,15 @@ Recommended branch:
 main
 ```
 
-Recommended first commit message:
+For a plain static site, GitHub Pages can publish directly from the `main` branch root after the repository owner enables Pages in GitHub settings. Do not enable GitHub Pages until the repository contents have been reviewed for privacy, rights, and public-marketing issues.
+
+The intended production domain is:
 
 ```text
-Initial website commit
+https://waterfallwonderpoconos.com/
 ```
 
-For a plain static site, GitHub Pages can publish directly from the `main` branch after the repository owner enables Pages in GitHub settings. Do not enable GitHub Pages until the repository contents have been reviewed for privacy, rights, and legal-advertising issues.
-
-The likely GitHub Pages project URL would be:
-
-```text
-https://madsen-spec.github.io/WaterfallWonder/
-```
-
-If a custom domain is used, update the canonical URL, Open Graph URLs, `robots.txt`, and `sitemap.xml` together.
+The `CNAME`, canonical URL, Open Graph URLs, `robots.txt`, and `sitemap.xml` are aligned to that custom domain. Do not enable GitHub Pages on a temporary project URL for indexing unless the canonical strategy is reviewed first.
 
 ## Pre-Publication Checklist
 
@@ -82,9 +78,10 @@ Before making the site public:
 
 - Confirm the GitHub repository is private unless public release is intended.
 - Confirm whether GitHub Pages will make the website publicly accessible.
-- Confirm the public URL.
+- Confirm the public URL and custom-domain DNS.
 - Confirm all property photos are approved for website use.
 - Confirm attraction/place photos have clear usage rights.
 - Confirm booking policies, bed count, pet approval details, Saw Creek registration guidance, and amenity rules are current.
 - Re-check public review counts and observation dates.
-- Review for legal-advertising concerns, including guarantees, unsupported “best/top” claims, testimonials, misleading fee claims, and confidential information.
+- Review for marketing/compliance concerns, including guarantees, unsupported "best/top" claims, testimonials, misleading fee claims, and confidential information.
+- Review `CONTENT_SOURCES.md` and `MAINTENANCE_CHECKLIST.md`.

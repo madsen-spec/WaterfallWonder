@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -106,7 +106,12 @@
         <span class="brand__mark" aria-hidden="true">W</span>
         <span class="brand__text">Waterfall Wonder</span>
       </a>
-      <nav class="primary-nav" aria-label="Primary navigation">
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Open site navigation">
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
         <a href="../../index.html#waterfall">Waterfall</a>
         <a href="../../index.html#stay">Stay</a>
         <a href="../../index.html#gallery">Gallery</a>
@@ -124,8 +129,8 @@
     <main id="main">
       <section class="hero guide-hero" id="top" aria-labelledby="hero-title">
         <picture class="hero__picture">
-          <source type="image/webp" srcset="../../assets/images/waterfall-wide-800.webp 800w, ../../assets/images/waterfall-wide-1200.webp 1200w, ../../assets/images/waterfall-wide-1800.webp 1800w" sizes="100vw">
-          <img src="../../assets/images/waterfall-wide-1800.jpg" srcset="../../assets/images/waterfall-wide-800.jpg 800w, ../../assets/images/waterfall-wide-1200.jpg 1200w, ../../assets/images/waterfall-wide-1800.jpg 1800w" sizes="100vw" width="1800" height="1200" alt="Natural waterfall and mossy rock ledges near Waterfall Wonder in the Poconos." fetchpriority="high" decoding="async">
+          <source type="image/webp" srcset="../../assets/images/waterfall-wide-800.webp 800w, ../../assets/images/waterfall-wide-1200.webp 1200w" sizes="100vw">
+          <img src="../../assets/images/waterfall-wide-1200.jpg" srcset="../../assets/images/waterfall-wide-800.jpg 800w, ../../assets/images/waterfall-wide-1200.jpg 1200w" sizes="100vw" width="1800" height="1200" alt="Natural waterfall and mossy rock ledges near Waterfall Wonder in the Poconos." fetchpriority="high" decoding="async">
         </picture>
         <div class="hero__shade" aria-hidden="true"></div>
         <div class="hero__content guide-hero__content">
@@ -207,8 +212,8 @@
         <article class="guide-card">
           <figure class="guide-card__media">
 <picture class="guide-card__picture">
-          <source type="image/webp" srcset="../../assets/images/nps-dingmans-falls-800.webp 800w, ../../assets/images/nps-dingmans-falls-1200.webp 1200w, ../../assets/images/nps-dingmans-falls-1600.webp 1600w" sizes="100vw">
-          <img src="../../assets/images/nps-dingmans-falls-1600.jpg" srcset="../../assets/images/nps-dingmans-falls-800.jpg 800w, ../../assets/images/nps-dingmans-falls-1200.jpg 1200w, ../../assets/images/nps-dingmans-falls-1600.jpg 1600w" sizes="100vw" width="1600" height="1067" alt="Dingmans Falls dropping through a forested rocky ravine." loading="lazy" decoding="async">
+          <source type="image/webp" srcset="../../assets/images/nps-dingmans-falls-800.webp 800w, ../../assets/images/nps-dingmans-falls-1200.webp 1200w" sizes="100vw">
+          <img src="../../assets/images/nps-dingmans-falls-1200.jpg" srcset="../../assets/images/nps-dingmans-falls-800.jpg 800w, ../../assets/images/nps-dingmans-falls-1200.jpg 1200w" sizes="100vw" width="1600" height="1067" alt="Dingmans Falls dropping through a forested rocky ravine." loading="lazy" decoding="async">
         </picture>
             <figcaption>NPS Photo / C. Huhn. Source: National Park Service Dingmans Falls page.</figcaption>
           </figure>
@@ -235,8 +240,8 @@
         <article class="guide-card">
           <figure class="guide-card__media">
 <picture class="guide-card__picture">
-          <source type="image/webp" srcset="../../assets/images/nps-raymondskill-falls-800.webp 800w, ../../assets/images/nps-raymondskill-falls-1200.webp 1200w, ../../assets/images/nps-raymondskill-falls-1600.webp 1600w" sizes="100vw">
-          <img src="../../assets/images/nps-raymondskill-falls-1600.jpg" srcset="../../assets/images/nps-raymondskill-falls-800.jpg 800w, ../../assets/images/nps-raymondskill-falls-1200.jpg 1200w, ../../assets/images/nps-raymondskill-falls-1600.jpg 1600w" sizes="100vw" width="1600" height="1067" alt="Raymondskill Falls cascading down layered rock in the Delaware Water Gap region." loading="lazy" decoding="async">
+          <source type="image/webp" srcset="../../assets/images/nps-raymondskill-falls-800.webp 800w, ../../assets/images/nps-raymondskill-falls-1200.webp 1200w" sizes="100vw">
+          <img src="../../assets/images/nps-raymondskill-falls-1200.jpg" srcset="../../assets/images/nps-raymondskill-falls-800.jpg 800w, ../../assets/images/nps-raymondskill-falls-1200.jpg 1200w" sizes="100vw" width="1600" height="1067" alt="Raymondskill Falls cascading down layered rock in the Delaware Water Gap region." loading="lazy" decoding="async">
         </picture>
             <figcaption>NPS Photo / J. Grier. Source: National Park Service Raymondskill Falls page.</figcaption>
           </figure>
