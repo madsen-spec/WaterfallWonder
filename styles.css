@@ -529,9 +529,7 @@ h3 {
   min-height: 430px;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
-  background:
-    radial-gradient(circle at 18% 12%, rgba(185, 121, 66, 0.28), transparent 32%),
-    linear-gradient(135deg, #141711 0%, #1d2119 58%, #273022 100%);
+  background: #11140f;
   box-shadow: var(--shadow);
 }
 
@@ -548,6 +546,37 @@ h3 {
   transition: opacity 260ms ease;
 }
 
+.review-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(12, 15, 11, 0.88) 0%, rgba(12, 15, 11, 0.72) 46%, rgba(12, 15, 11, 0.36) 100%),
+    linear-gradient(180deg, rgba(12, 15, 11, 0.42), rgba(12, 15, 11, 0.84));
+  pointer-events: none;
+}
+
+.review-slide__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.review-slide__media img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  filter: saturate(0.94) contrast(1.04);
+}
+
+.review-slide > :not(.review-slide__media) {
+  position: relative;
+  z-index: 2;
+}
+
 .review-slide.is-active {
   opacity: 1;
   pointer-events: auto;
@@ -555,7 +584,7 @@ h3 {
 
 .review-slide__source {
   margin: 0;
-  color: rgba(248, 241, 231, 0.62);
+  color: rgba(248, 241, 231, 0.82);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0;
@@ -573,6 +602,7 @@ h3 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 2.15rem;
   line-height: 1.14;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.34);
 }
 
 .review-slide__tags {
@@ -1450,7 +1480,19 @@ figcaption {
 }
 
 .night-stack .gallery-button picture {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
+}
+
+.night-secondary-grid {
+  width: min(100%, var(--max));
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.night-secondary-grid .gallery-button picture {
+  aspect-ratio: 16 / 10;
 }
 
 .night-card figcaption {
@@ -2014,7 +2056,7 @@ figcaption {
   }
 
   .night-stack .gallery-button picture {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
   }
 
   .banner-media picture {
@@ -2135,6 +2177,7 @@ figcaption {
 
   .gallery-grid,
   .night-grid,
+  .night-secondary-grid,
   .sleep-list,
   .photo-proof-grid,
   .photo-proof-grid--sleeping {
