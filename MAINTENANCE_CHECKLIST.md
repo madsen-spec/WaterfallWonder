@@ -25,5 +25,5 @@ Use this before public launch and then monthly during active booking season.
 
 - Run `npm run build`.
 - Review warnings for large images, stale dates, missing image dimensions, sitemap mismatches, and domain mismatches.
-- Confirm `CNAME`, canonical URLs, Open Graph URLs, `robots.txt`, and `sitemap.xml` all match the intended public domain.
+- Confirm canonical URLs, Open Graph URLs, `robots.txt`, and `sitemap.xml` all match the current public URL. Add or restore `CNAME` only when the custom domain is registered and DNS is pointed to GitHub Pages.
 - Confirm Search Console is connected after public launch and resubmit the sitemap after major content changes.

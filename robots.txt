@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://waterfallwonderpoconos.com/sitemap.xml
+Sitemap: https://madsen-spec.github.io/WaterfallWonder/sitemap.xml

@@ -3,8 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const publicDomain = "https://waterfallwonderpoconos.com/";
-const publicHost = new URL(publicDomain).hostname;
+const publicDomain = "https://madsen-spec.github.io/WaterfallWonder/";
+const publicUrl = new URL(publicDomain);
+const publicBasePath = publicUrl.pathname.replace(/\/$/, "");
 const textExtensions = new Set([".html", ".css", ".js", ".json", ".svg", ".xml", ".txt", ".md", ".webmanifest"]);
 const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"]);
 const requiredFiles = [
@@ -15,7 +16,6 @@ const requiredFiles = [
   "robots.txt",
   "sitemap.xml",
   ".nojekyll",
-  "CNAME",
   "CONTENT_SOURCES.md",
   "MAINTENANCE_CHECKLIST.md"
 ];
@@ -76,7 +76,8 @@ function collectReferences(filePath, text) {
     for (const item of match[1].split(",")) refs.push(item.trim().split(/\s+/)[0]);
   }
 
-  const absoluteAsset = /https:\/\/waterfallwonderpoconos\.com\/(assets\/images\/[^"<\s]+)/g;
+  const escapedPublicDomain = publicDomain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const absoluteAsset = new RegExp(`${escapedPublicDomain}(assets/images/[^"<\\s]+)`, "g");
   for (const match of text.matchAll(absoluteAsset)) refs.push(`${publicDomain}${match[1]}`);
 
   return refs
@@ -177,11 +178,6 @@ if (totalImageBytes > totalImageWarningBytes) {
   warnings.push(`Total public image payload is ${Math.round(totalImageBytes / 1024 / 1024)} MB; target is 25-35 MB before final public launch.`);
 }
 
-const cname = (await readFile(path.join(root, "CNAME"), "utf8")).trim();
-if (cname && cname !== publicHost) {
-  errors.push(`CNAME (${cname}) does not match configured public domain host (${publicHost}).`);
-}
-
 for (const rel of ["robots.txt", "sitemap.xml", "index.html"]) {
   const text = await readFile(path.join(root, rel), "utf8");
   if (!text.includes(publicDomain)) {
@@ -195,12 +191,17 @@ const htmlPages = files
   .filter((rel) => rel !== "404.html")
   .sort();
 
-const sitemapPages = Array.from(sitemap.matchAll(/<loc>(https:\/\/waterfallwonderpoconos\.com\/[^<]*)<\/loc>/g))
+const sitemapPages = Array.from(sitemap.matchAll(/<loc>(https?:\/\/[^<]+)<\/loc>/g))
+  .filter((match) => match[1].startsWith(publicDomain))
   .map((match) => {
     const url = new URL(match[1]);
-    if (url.pathname === "/") return "index.html";
-    if (url.pathname.endsWith("/")) return `${url.pathname.slice(1)}index.html`;
-    return url.pathname.slice(1);
+    let pathname = url.pathname;
+    if (publicBasePath && pathname.startsWith(`${publicBasePath}/`)) {
+      pathname = pathname.slice(publicBasePath.length);
+    }
+    if (pathname === "/") return "index.html";
+    if (pathname.endsWith("/")) return `${pathname.slice(1)}index.html`;
+    return pathname.slice(1);
   })
   .filter((rel) => rel.endsWith(".html"))
   .sort();

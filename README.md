@@ -15,7 +15,7 @@ The site is made from ordinary files:
 - `assets/images/` for optimized public website images.
 - `robots.txt` and `sitemap.xml` for search engines.
 - `404.html` for a static-hosting not-found page.
-- `CNAME` and `.nojekyll` for GitHub Pages custom-domain publishing.
+- `.nojekyll` for GitHub Pages static-file publishing.
 - `CONTENT_SOURCES.md` and `MAINTENANCE_CHECKLIST.md` for public-content upkeep.
 
 ## What Is Included
@@ -64,13 +64,13 @@ main
 
 For a plain static site, GitHub Pages can publish directly from the `main` branch root after the repository owner enables Pages in GitHub settings. Do not enable GitHub Pages until the repository contents have been reviewed for privacy, rights, and public-marketing issues.
 
-The intended production domain is:
+The current public GitHub Pages URL is:
 
 ```text
-https://waterfallwonderpoconos.com/
+https://madsen-spec.github.io/WaterfallWonder/
 ```
 
-The `CNAME`, canonical URL, Open Graph URLs, `robots.txt`, and `sitemap.xml` are aligned to that custom domain. Do not enable GitHub Pages on a temporary project URL for indexing unless the canonical strategy is reviewed first.
+The canonical URL, Open Graph URLs, `robots.txt`, and `sitemap.xml` are aligned to that GitHub Pages URL. Add a `CNAME` file only after the custom domain is registered and its DNS records point to GitHub Pages.
 
 ## Pre-Publication Checklist
 
