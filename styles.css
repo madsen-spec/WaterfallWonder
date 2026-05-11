@@ -94,6 +94,7 @@ svg {
 #stay,
 #waterfall,
 #gallery,
+#night,
 #amenities,
 #faq {
   scroll-margin-top: 96px;
@@ -1407,6 +1408,74 @@ figcaption {
   margin: 8px 0 6px;
 }
 
+.night-showcase {
+  background:
+    linear-gradient(180deg, rgba(20, 23, 17, 0.98), rgba(29, 33, 25, 0.96)),
+    var(--charcoal);
+}
+
+.night-showcase .section__heading > p:not(.eyebrow) {
+  max-width: 480px;
+  margin: 0;
+  color: rgba(248, 241, 231, 0.74);
+  font-size: 1.02rem;
+}
+
+.night-grid {
+  width: min(100%, var(--max));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.38fr) minmax(320px, 0.74fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.night-card {
+  margin: 0;
+  min-width: 0;
+}
+
+.night-card .gallery-button {
+  background: #11140f;
+  cursor: zoom-in;
+}
+
+.night-card--feature .gallery-button picture {
+  aspect-ratio: 16 / 10;
+}
+
+.night-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.night-stack .gallery-button picture {
+  aspect-ratio: 16 / 9;
+}
+
+.night-card figcaption {
+  color: rgba(248, 241, 231, 0.68);
+}
+
+.night-details {
+  width: min(100%, var(--max));
+  margin: 28px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 24px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(248, 241, 231, 0.15);
+}
+
+.night-details p {
+  margin: 0;
+  color: rgba(248, 241, 231, 0.74);
+}
+
+.night-details strong {
+  color: var(--ink);
+}
+
 .amenity-columns {
   width: min(100%, var(--max));
   margin: 0 auto;
@@ -1896,6 +1965,7 @@ figcaption {
   #stay,
   #waterfall,
   #gallery,
+  #night,
   #amenities,
   #faq {
     scroll-margin-top: 84px;
@@ -1934,6 +2004,19 @@ figcaption {
     aspect-ratio: 4 / 3;
   }
 
+  .night-grid,
+  .night-details {
+    grid-template-columns: 1fr;
+  }
+
+  .night-card--feature .gallery-button picture {
+    aspect-ratio: 4 / 3;
+  }
+
+  .night-stack .gallery-button picture {
+    aspect-ratio: 16 / 9;
+  }
+
   .banner-media picture {
     aspect-ratio: 4 / 3;
   }
@@ -1957,6 +2040,7 @@ figcaption {
   #stay,
   #waterfall,
   #gallery,
+  #night,
   #amenities,
   #faq {
     scroll-margin-top: 142px;
@@ -2050,6 +2134,7 @@ figcaption {
   }
 
   .gallery-grid,
+  .night-grid,
   .sleep-list,
   .photo-proof-grid,
   .photo-proof-grid--sleeping {
@@ -2072,6 +2157,7 @@ figcaption {
   .waterfall__note,
   .highlight,
   .amenity-group,
+  .night-details,
   .guide-card,
   .guide-season-grid article,
   .guide-related-link,

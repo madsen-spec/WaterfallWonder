@@ -4,7 +4,7 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://waterfallwonderpoconos.com/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -50,6 +50,18 @@
     <image:image>
       <image:loc>https://waterfallwonderpoconos.com/assets/images/firepit-winter-seating-1200.jpg</image:loc>
       <image:title>Fire pit seating at Waterfall Wonder in winter woods</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://waterfallwonderpoconos.com/assets/images/firepit-dusk-cabin-1200.jpg</image:loc>
+      <image:title>Waterfall Wonder cabin and fire pit glowing at dusk</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://waterfallwonderpoconos.com/assets/images/exterior-dusk-side-1200.jpg</image:loc>
+      <image:title>Waterfall Wonder exterior decks glowing at dusk</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://waterfallwonderpoconos.com/assets/images/deck-fire-table-dusk-1200.jpg</image:loc>
+      <image:title>Waterfall Wonder deck fire table at dusk</image:title>
     </image:image>
     <image:image>
       <image:loc>https://waterfallwonderpoconos.com/assets/images/bear-bedroom-1200.jpg</image:loc>

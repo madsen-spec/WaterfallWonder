@@ -20,6 +20,7 @@ This file tracks the public-safe sources used for visible website claims, images
 ## Property Photos
 
 - Property images in `assets/images/` are public optimized copies prepared for the website from curated Waterfall Wonder photo folders.
+- The homepage night showcase uses owned property-photo derivatives, including `firepit-dusk-cabin-*`, `exterior-dusk-side-*`, and `deck-fire-table-dusk-*`.
 - Source originals should remain outside the public repository.
 - Before public launch, confirm owner approval for all property photos used in hero, gallery, carousel, Open Graph, and sitemap image entries.
 
