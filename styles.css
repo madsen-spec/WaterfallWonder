@@ -526,7 +526,7 @@ h3 {
 
 .review-carousel__viewport {
   position: relative;
-  min-height: 430px;
+  min-height: 470px;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
   background: #11140f;
@@ -536,11 +536,10 @@ h3 {
 .review-slide {
   position: absolute;
   inset: 0;
-  display: grid;
-  align-content: center;
-  gap: 22px;
+  display: flex;
+  align-items: center;
   margin: 0;
-  padding: 52px;
+  padding: 34px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 260ms ease;
@@ -552,8 +551,8 @@ h3 {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(90deg, rgba(12, 15, 11, 0.88) 0%, rgba(12, 15, 11, 0.72) 46%, rgba(12, 15, 11, 0.36) 100%),
-    linear-gradient(180deg, rgba(12, 15, 11, 0.42), rgba(12, 15, 11, 0.84));
+    linear-gradient(90deg, rgba(12, 15, 11, 0.78) 0%, rgba(12, 15, 11, 0.6) 50%, rgba(12, 15, 11, 0.32) 100%),
+    linear-gradient(180deg, rgba(12, 15, 11, 0.38), rgba(12, 15, 11, 0.72));
   pointer-events: none;
 }
 
@@ -569,12 +568,21 @@ h3 {
   height: 100%;
   max-width: none;
   object-fit: cover;
-  filter: saturate(0.94) contrast(1.04);
+  filter: saturate(0.96) contrast(1.02);
 }
 
-.review-slide > :not(.review-slide__media) {
+.review-slide__content {
   position: relative;
   z-index: 2;
+  width: min(100%, 610px);
+  display: grid;
+  gap: 18px;
+  padding: 30px;
+  border: 1px solid rgba(248, 241, 231, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(20, 23, 17, 0.82), rgba(20, 23, 17, 0.68));
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(2px);
 }
 
 .review-slide.is-active {
@@ -596,12 +604,12 @@ h3 {
 }
 
 .review-slide blockquote p {
-  max-width: 760px;
+  max-width: 100%;
   margin: 0;
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 2.15rem;
-  line-height: 1.14;
+  font-size: 1.82rem;
+  line-height: 1.17;
   text-shadow: 0 2px 24px rgba(0, 0, 0, 0.34);
 }
 
@@ -2014,15 +2022,20 @@ figcaption {
   }
 
   .review-carousel__viewport {
-    min-height: 360px;
+    min-height: 430px;
   }
 
   .review-slide {
-    padding: 42px;
+    padding: 28px;
+  }
+
+  .review-slide__content {
+    width: min(100%, 580px);
+    padding: 26px;
   }
 
   .review-slide blockquote p {
-    font-size: 1.82rem;
+    font-size: 1.62rem;
   }
 
   .gallery-grid {
@@ -2259,15 +2272,27 @@ figcaption {
   }
 
   .review-carousel__viewport {
-    min-height: 392px;
+    min-height: 500px;
   }
 
   .review-slide {
-    padding: 28px 24px;
+    padding: 18px;
+    align-items: center;
+  }
+
+  .review-slide::after {
+    background:
+      linear-gradient(180deg, rgba(12, 15, 11, 0.44), rgba(12, 15, 11, 0.84)),
+      linear-gradient(90deg, rgba(12, 15, 11, 0.64), rgba(12, 15, 11, 0.4));
+  }
+
+  .review-slide__content {
+    gap: 14px;
+    padding: 20px;
   }
 
   .review-slide blockquote p {
-    font-size: 1.42rem;
+    font-size: 1.24rem;
     line-height: 1.2;
   }
 
