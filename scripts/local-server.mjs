@@ -2,9 +2,11 @@ import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { publicDomain } from "./site-data.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const port = Number(process.env.PORT || 4173);
+const publicBasePath = new URL(publicDomain).pathname.replace(/\/$/, "");
 
 const mimeTypes = new Map([
   [".html", "text/html; charset=utf-8"],
@@ -21,10 +23,14 @@ const mimeTypes = new Map([
 ]);
 
 function safePath(urlPath) {
-  const decoded = decodeURIComponent(urlPath.split("?")[0]);
+  let decoded = decodeURIComponent(urlPath.split("?")[0]);
+  if (publicBasePath && (decoded === publicBasePath || decoded.startsWith(`${publicBasePath}/`))) {
+    decoded = decoded.slice(publicBasePath.length) || "/";
+  }
   const relative = decoded.replace(/^\/+/, "");
   const resolved = path.resolve(root, relative);
-  if (!resolved.startsWith(root)) return null;
+  const fromRoot = path.relative(root, resolved);
+  if (fromRoot.startsWith("..") || path.isAbsolute(fromRoot)) return null;
   return resolved;
 }
 

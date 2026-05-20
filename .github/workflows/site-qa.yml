@@ -1,0 +1,42 @@
+name: Site QA
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Build and browser QA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install browser QA dependency
+        run: npm install --no-save playwright
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build and validate static site
+        run: npm run build
+
+      - name: Run rendered browser QA
+        run: npm run qa:browser
+        env:
+          QA_OUTPUT_DIR: ${{ runner.temp }}/waterfall-wonder-browser-qa
+
+      - name: Upload browser QA screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-qa
+          path: ${{ runner.temp }}/waterfall-wonder-browser-qa

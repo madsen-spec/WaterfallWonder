@@ -4,9 +4,13 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/</loc>
-    <lastmod>2026-05-11</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/waterfall-wonder-og.jpg</image:loc>
+      <image:title>Waterfall Wonder social sharing image</image:title>
+    </image:image>
     <image:image>
       <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/living-room-window-wall-1200.jpg</image:loc>
       <image:title>Waterfall Wonder living room window wall</image:title>
@@ -98,7 +102,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/things-to-do-near-winona-falls/</loc>
-    <lastmod>2026-05-09</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
@@ -113,7 +117,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/outdoors/waterfalls-near-winona-falls/</loc>
-    <lastmod>2026-05-09</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
@@ -134,7 +138,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/family-fun/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
@@ -153,7 +157,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/winter-fun/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
@@ -172,7 +176,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/guest-guide/rainy-day-plan/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
@@ -191,7 +195,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/guest-guide/sample-weekend-plan/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
@@ -210,7 +214,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/guest-guide/safety-and-access-notes/</loc>
-    <lastmod>2026-05-09</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
 
@@ -229,7 +233,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/pet-friendly-poconos-cabin/</loc>
-    <lastmod>2026-05-09</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
 
@@ -244,7 +248,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/large-group-poconos-cabin/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
 
@@ -282,8 +286,67 @@
     </image:image>
   </url>
   <url>
+    <loc>https://madsen-spec.github.io/WaterfallWonder/sleeping-layout-poconos-cabin/</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/guide-large-group-og.jpg</image:loc>
+      <image:title>Sleeping Layout Poconos Cabin guide</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/primary-bedroom-1200.jpg</image:loc>
+      <image:title>Primary bedroom at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/bear-bedroom-1200.jpg</image:loc>
+      <image:title>Bear bedroom at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/deer-bedroom-1200.jpg</image:loc>
+      <image:title>Deer bedroom at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/raccoon-bedroom-1200.jpg</image:loc>
+      <image:title>Raccoon bedroom at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/cove-sleeping-area-1200.jpg</image:loc>
+      <image:title>Cove sleeping area at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/loft-sleeping-area-1200.jpg</image:loc>
+      <image:title>Loft sleeping area at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/game-room-arcade-fireplace-1200.jpg</image:loc>
+      <image:title>Game room arcade and fireplace at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/primary-bathroom-shower-1200.jpg</image:loc>
+      <image:title>Primary bathroom shower at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/main-floor-bathroom-shower-1200.jpg</image:loc>
+      <image:title>Main floor bathroom shower at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/lower-level-bathroom-tub-1200.jpg</image:loc>
+      <image:title>Lower level bathroom tub at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/driveway-arrival-parking-1200.jpg</image:loc>
+      <image:title>Driveway and arrival parking area at Waterfall Wonder</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://madsen-spec.github.io/WaterfallWonder/assets/images/front-deck-forest-seating-1200.jpg</image:loc>
+      <image:title>Front deck forest seating at Waterfall Wonder</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/waterfall-cabin-near-bushkill-falls/</loc>
-    <lastmod>2026-05-09</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
 
@@ -298,7 +361,7 @@
   </url>
   <url>
     <loc>https://madsen-spec.github.io/WaterfallWonder/food-drink/breweries-wineries-and-date-night/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 

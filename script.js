@@ -6,6 +6,7 @@
   var closeButton = document.querySelector("[data-lightbox-close]");
   var navToggle = document.querySelector("[data-nav-toggle]");
   var primaryNav = document.querySelector("#primary-nav");
+  var mobileBooking = document.querySelector(".mobile-booking");
   var lastTrigger = null;
 
   function updateHeader() {
@@ -17,6 +18,21 @@
 
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
+
+  function updateMobileBooking() {
+    if (!mobileBooking) {
+      return;
+    }
+
+    var isHidden = window.scrollY < 160;
+    mobileBooking.classList.toggle("is-hidden", isHidden);
+    mobileBooking.setAttribute("aria-hidden", isHidden ? "true" : "false");
+    mobileBooking.tabIndex = isHidden ? -1 : 0;
+  }
+
+  updateMobileBooking();
+  window.addEventListener("scroll", updateMobileBooking, { passive: true });
+  window.addEventListener("resize", updateMobileBooking);
 
   function setNavOpen(isOpen) {
     if (!header || !navToggle) {
@@ -70,14 +86,27 @@
       return;
     }
 
-    if (typeof dialog.close === "function") {
+    if (typeof dialog.close === "function" && dialog.open) {
       dialog.close();
     } else {
       dialog.removeAttribute("open");
+      afterLightboxClose();
+    }
+  }
+
+  function afterLightboxClose() {
+    if (dialogImage) {
+      dialogImage.removeAttribute("src");
+      dialogImage.alt = "";
+    }
+
+    if (dialogCaption) {
+      dialogCaption.textContent = "";
     }
 
     if (lastTrigger) {
       lastTrigger.focus();
+      lastTrigger = null;
     }
   }
 
@@ -175,5 +204,7 @@
         closeLightbox();
       }
     });
+
+    dialog.addEventListener("close", afterLightboxClose);
   }
 })();
