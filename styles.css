@@ -7,7 +7,7 @@
   --cream: #f5efe3;
   --paper: #fbf7ef;
   --stone: #d8d0c2;
-  --muted: #7a746b;
+  --muted: #6f685f;
   --ink: #f8f1e7;
   --dark-text: #20231d;
   --line-dark: rgba(20, 23, 17, 0.16);
@@ -22,7 +22,6 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
 }
 
 body {
@@ -33,7 +32,11 @@ body {
   font-size: 16px;
   line-height: 1.65;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-wrap: break-word;
+}
+
+body.is-nav-open {
+  overflow: hidden;
 }
 
 img,
@@ -88,6 +91,19 @@ svg {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.new-window-icon {
+  display: inline-block;
+  margin-inline-start: 0.28em;
+  font-size: 0.78em;
+  line-height: 1;
+  transform: translateY(-0.08em);
+}
+
+.button .new-window-icon,
+.mobile-booking .new-window-icon {
+  display: none;
 }
 
 #reviews,
@@ -160,8 +176,8 @@ svg {
 
 .nav-toggle {
   display: none;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 1px solid rgba(248, 241, 231, 0.38);
   border-radius: 6px;
@@ -257,7 +273,7 @@ svg {
 }
 
 .button--small {
-  min-height: 42px;
+  min-height: 44px;
   padding: 10px 14px;
   font-size: 0.88rem;
 }
@@ -356,6 +372,17 @@ h3 {
   margin-bottom: 28px;
   color: rgba(248, 241, 231, 0.88);
   font-size: 1.22rem;
+}
+
+.hero__note {
+  max-width: 680px;
+  margin: 18px 0 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--copper);
+  color: rgba(248, 241, 231, 0.86);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.62);
 }
 
 .hero__actions,
@@ -533,6 +560,10 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.review-proof .review-carousel__viewport {
+  border-radius: 8px;
+}
+
 .review-slide {
   position: absolute;
   inset: 0;
@@ -605,6 +636,24 @@ h3 {
   text-shadow: 0 2px 24px rgba(0, 0, 0, 0.34);
 }
 
+.review-proof__title {
+  max-width: 700px;
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.15rem;
+  line-height: 1.14;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.34);
+}
+
+.review-proof__body {
+  max-width: 620px;
+  margin: 0;
+  color: rgba(248, 241, 231, 0.84);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
 .review-slide__tags {
   display: flex;
   flex-wrap: wrap;
@@ -644,25 +693,41 @@ h3 {
 }
 
 .review-carousel__dots button {
+  position: relative;
   display: grid;
-  width: 10px;
-  height: 10px;
+  width: 28px;
+  height: 28px;
   place-items: center;
   padding: 0;
-  border: 1px solid rgba(248, 241, 231, 0.26);
+  border: 0;
   border-radius: 50%;
   color: var(--ink);
-  background: rgba(248, 241, 231, 0.06);
+  background: transparent;
   cursor: pointer;
+}
+
+.review-carousel__dots button::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(248, 241, 231, 0.42);
+  border-radius: 50%;
+  background: rgba(248, 241, 231, 0.08);
   transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
 
 .review-carousel__dots button:hover,
-.review-carousel__dots button:focus-visible,
-.review-carousel__dots button[aria-current="true"] {
+.review-carousel__dots button:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 0;
+}
+
+.review-carousel__dots button:hover::before,
+.review-carousel__dots button:focus-visible::before,
+.review-carousel__dots button[aria-current="true"]::before {
   border-color: var(--copper);
   background: var(--copper);
-  color: #17130f;
+  transform: scale(1.08);
 }
 
 .section {
@@ -947,34 +1012,57 @@ figcaption {
 .waterfall-carousel__dots button {
   display: grid;
   place-items: center;
-  border: 1px solid rgba(248, 241, 231, 0.26);
   color: var(--ink);
-  background: rgba(248, 241, 231, 0.06);
   cursor: pointer;
-  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
 
 .carousel-button {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(248, 241, 231, 0.34);
   border-radius: 50%;
+  background: rgba(248, 241, 231, 0.06);
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
 
 .waterfall-carousel__dots button {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.waterfall-carousel__dots button::before {
+  content: "";
   width: 10px;
   height: 10px;
-  padding: 0;
+  border: 1px solid rgba(248, 241, 231, 0.42);
   border-radius: 50%;
+  background: rgba(248, 241, 231, 0.08);
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
 
 .carousel-button:hover,
-.carousel-button:focus-visible,
-.waterfall-carousel__dots button:hover,
-.waterfall-carousel__dots button:focus-visible,
-.waterfall-carousel__dots button[aria-current="true"] {
+.carousel-button:focus-visible {
   border-color: var(--copper);
   background: var(--copper);
   color: #17130f;
+}
+
+.waterfall-carousel__dots button:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 0;
+}
+
+.waterfall-carousel__dots button:hover::before,
+.waterfall-carousel__dots button:focus-visible::before,
+.waterfall-carousel__dots button[aria-current="true"]::before {
+  border-color: var(--copper);
+  background: var(--copper);
+  transform: scale(1.08);
 }
 
 .carousel-button:hover,
@@ -1068,6 +1156,10 @@ figcaption {
   gap: 18px;
 }
 
+.safety-notes .local-explore-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .local-explore-card {
   min-width: 0;
   min-height: 236px;
@@ -1123,12 +1215,12 @@ figcaption {
 
 .guide-hero .hero__shade {
   background:
-    linear-gradient(90deg, rgba(12, 15, 11, 0.38), rgba(12, 15, 11, 0.18) 48%, rgba(12, 15, 11, 0.06)),
-    linear-gradient(0deg, rgba(12, 15, 11, 0.42), rgba(12, 15, 11, 0.02) 54%, rgba(12, 15, 11, 0.12));
+    linear-gradient(90deg, rgba(12, 15, 11, 0.76), rgba(12, 15, 11, 0.48) 52%, rgba(12, 15, 11, 0.2)),
+    linear-gradient(0deg, rgba(12, 15, 11, 0.78), rgba(12, 15, 11, 0.12) 58%, rgba(12, 15, 11, 0.34));
 }
 
 .guide-hero .hero__picture img {
-  filter: brightness(1.16) saturate(1.05);
+  filter: brightness(0.96) saturate(1.03);
 }
 
 .guide-hero h1,
@@ -1137,8 +1229,10 @@ figcaption {
 }
 
 .guide-hero h1 {
-  max-width: 980px;
-  font-size: clamp(3.2rem, 7vw, 6rem);
+  max-width: 16ch;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  line-height: 1;
+  text-wrap: balance;
 }
 
 .guide-hero .hero__lede {
@@ -1776,9 +1870,9 @@ figcaption {
 
 .mobile-booking {
   position: fixed;
-  left: 14px;
-  right: 14px;
-  bottom: 14px;
+  left: max(14px, env(safe-area-inset-left));
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
   z-index: 60;
   display: none;
   min-height: 52px;
@@ -1792,10 +1886,31 @@ figcaption {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
+.mobile-booking:focus-visible {
+  outline: 3px solid var(--charcoal);
+  outline-offset: 3px;
+}
+
 .mobile-booking.is-hidden {
   opacity: 0;
   pointer-events: none;
   transform: translateY(calc(100% + 18px));
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  visibility: hidden;
+  opacity: 0;
+  background: rgba(8, 10, 7, 0.66);
+  backdrop-filter: blur(2px);
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.nav-backdrop.is-visible {
+  visibility: visible;
+  opacity: 1;
 }
 
 .lightbox {
@@ -1858,41 +1973,73 @@ figcaption {
     gap: 14px;
   }
 
-  .nav-toggle {
-    display: inline-grid;
-    justify-self: end;
-  }
-
   .primary-nav {
-    display: none;
-  }
-
-  .site-header.is-nav-open {
-    background: var(--charcoal);
-  }
-
-  .site-header.is-nav-open .primary-nav {
-    position: absolute;
-    top: calc(100% + 1px);
-    left: 20px;
-    right: 20px;
+    grid-column: 1 / -1;
+    justify-self: stretch;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1px;
+    width: 100%;
     padding: 10px;
     border: 1px solid rgba(248, 241, 231, 0.16);
     border-radius: 8px;
-    background: rgba(20, 23, 17, 0.98);
-    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.28);
+    background: var(--charcoal);
   }
 
-  .site-header.is-nav-open .primary-nav a {
-    min-height: 42px;
+  .primary-nav a {
+    min-height: 44px;
     display: flex;
     align-items: center;
     padding: 10px 12px;
     border-radius: 6px;
     background: rgba(248, 241, 231, 0.04);
+  }
+
+  .js .nav-toggle {
+    display: inline-grid;
+    justify-self: end;
+  }
+
+  .js .primary-nav {
+    display: none;
+  }
+
+  .js .site-header.is-nav-open {
+    background: var(--charcoal);
+  }
+
+  .js .site-header.is-nav-open .primary-nav {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: -34px;
+    right: -34px;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-self: stretch;
+    gap: 1px;
+    width: auto;
+    max-height: calc(100dvh - 74px);
+    padding: 14px 20px 18px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-width: 0 0 1px;
+    border-radius: 0 0 8px 8px;
+    background: rgba(20, 23, 17, 0.99);
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.28);
+  }
+
+  html:not(.js) .site-header {
+    position: absolute;
+    background: var(--charcoal);
+  }
+
+  html:not(.js) .hero__content {
+    padding-top: 250px;
+  }
+
+  html:not(.js) .not-found {
+    padding-top: 250px;
   }
 
   .site-header .button {
@@ -1905,6 +2052,11 @@ figcaption {
 @media (max-width: 900px) {
   .site-header {
     padding: 14px 20px;
+  }
+
+  .js .site-header.is-nav-open .primary-nav {
+    left: -20px;
+    right: -20px;
   }
 
   .hero {
@@ -2028,7 +2180,8 @@ figcaption {
     padding: 42px;
   }
 
-  .review-slide blockquote p {
+  .review-slide blockquote p,
+  .review-proof__title {
     font-size: 1.82rem;
   }
 
@@ -2077,12 +2230,11 @@ figcaption {
 
 @media (max-width: 700px) {
   .site-footer {
-    padding-bottom: 86px;
+    padding-bottom: 48px;
   }
 
   .guest-reviews {
-    padding-bottom: 126px;
-    scroll-margin-top: 142px;
+    scroll-margin-top: 84px;
   }
 
   #reviews,
@@ -2092,37 +2244,59 @@ figcaption {
   #night,
   #amenities,
   #faq {
-    scroll-margin-top: 142px;
-  }
-
-  .waterfall {
-    padding-bottom: 126px;
-  }
-
-  .final-cta {
-    padding-bottom: 92px;
-  }
-
-  .mobile-booking {
-    display: flex;
+    scroll-margin-top: 84px;
   }
 
   .hero__content {
-    padding-bottom: 126px;
+    padding-bottom: 52px;
   }
 
   .guide-hero {
-    min-height: 100svh;
+    min-height: 82svh;
   }
 
   .guide-hero__content {
-    padding-bottom: 126px;
+    padding-bottom: 68px;
+  }
+
+  .guide-hero h1 {
+    max-width: 13ch;
+    font-size: clamp(2.6rem, 11vw, 3.35rem);
+    line-height: 1.02;
+  }
+
+  .guide-hero .hero__lede {
+    margin-bottom: 22px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .guide-hero .hero__actions {
+    margin-bottom: 26px;
+  }
+}
+
+@media (max-width: 700px) and (min-height: 560px) and (orientation: portrait) {
+  html {
+    scroll-padding-bottom: 92px;
+  }
+
+  :where(a, button, summary, [tabindex]) {
+    scroll-margin-bottom: 92px;
+  }
+
+  .js .mobile-booking {
+    display: flex;
+  }
+
+  .site-footer {
+    padding-bottom: 104px;
   }
 }
 
 @media (max-width: 560px) {
   body {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .brand__text {
@@ -2139,10 +2313,23 @@ figcaption {
     grid-template-columns: auto auto;
   }
 
-  .site-header.is-nav-open .primary-nav {
+  .primary-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .js .site-header.is-nav-open .primary-nav {
     grid-template-columns: 1fr;
-    left: 14px;
-    right: 14px;
+    left: -20px;
+    right: -20px;
+    padding-inline: 14px;
+  }
+
+  html:not(.js) .hero__content {
+    padding-top: 330px;
+  }
+
+  html:not(.js) .not-found {
+    padding-top: 330px;
   }
 
   h1 {
@@ -2277,7 +2464,8 @@ figcaption {
     padding: 28px 24px;
   }
 
-  .review-slide blockquote p {
+  .review-slide blockquote p,
+  .review-proof__title {
     font-size: 1.42rem;
     line-height: 1.2;
   }
@@ -2312,6 +2500,37 @@ figcaption {
 
   .faq-list summary {
     font-size: 1.14rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .review-carousel__buttons,
+  .review-carousel__dots {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .review-carousel__dots {
+    gap: 4px;
+  }
+
+  .review-carousel__dots button {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .waterfall-carousel__toolbar {
+    display: grid;
+    gap: 8px;
+  }
+
+  .waterfall-carousel__buttons {
+    justify-content: space-between;
+  }
+
+  .waterfall-carousel__dots {
+    justify-content: center;
   }
 }
 

@@ -1,9 +1,11 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { bookingLinks, pages, publicDomain, reviewedOn } from "./site-data.mjs";
+import { bookingLinks, pages, publicDomain } from "./site-data.mjs";
+import { applyCopyOverrides, effectiveContentModifiedOn, loadCopyRegistry } from "./visual-copy-model.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const checkOnly = process.argv.includes("--check");
 
 function escapeAttribute(value) {
   return value
@@ -18,6 +20,7 @@ function absoluteUrl(pagePath = "") {
 }
 
 function prefixFor(page) {
+  if (page.file === "404.html") return "/";
   const depth = page.file.split("/").length - 1;
   return "../".repeat(depth);
 }
@@ -37,23 +40,21 @@ function renderButtonIcon() {
 
 function renderHeader(page) {
   const isHome = page.file === "index.html";
-  const brandHref = isHome ? "#top" : `${prefixFor(page)}index.html`;
+  const brandHref = isHome ? "#top" : page.file === "404.html" ? "/" : `${prefixFor(page)}index.html`;
   const navLinks = isHome
     ? [
+        ["House", "#gallery"],
         ["Waterfall", "#waterfall"],
-        ["Reviews", "#reviews"],
-        ["Stay", "#stay"],
-        ["Gallery", "#gallery"],
+        ["Sleeping & Group Fit", "sleeping-layout-poconos-cabin/index.html"],
         ["Local Guide", "things-to-do-near-winona-falls/index.html"],
-        ["Amenities", "#amenities"],
-        ["FAQ", "#faq"]
+        ["Safety / FAQ", "guest-guide/safety-and-access-notes/index.html"]
       ]
     : [
+        ["House", `${prefixFor(page)}index.html#gallery`],
         ["Waterfall", `${prefixFor(page)}index.html#waterfall`],
-        ["Stay", `${prefixFor(page)}index.html#stay`],
-        ["Gallery", `${prefixFor(page)}index.html#gallery`],
+        ["Sleeping & Group Fit", `${prefixFor(page)}sleeping-layout-poconos-cabin/index.html`],
         ["Local Guide", `${prefixFor(page)}things-to-do-near-winona-falls/index.html`],
-        ["FAQ", `${prefixFor(page)}index.html#faq`]
+        ["Safety / FAQ", `${prefixFor(page)}guest-guide/safety-and-access-notes/index.html`]
       ];
 
   const renderedNav = navLinks
@@ -73,8 +74,8 @@ function renderHeader(page) {
       <nav class="primary-nav" id="primary-nav" aria-label="Primary navigation">
 ${renderedNav}
       </nav>
-      <a class="button button--small button--light" href="${bookingLinks.wanderHome}" target="_blank" rel="noopener noreferrer" aria-label="Book Waterfall Wonder directly with WanderHome">
-        Book Direct
+      <a class="button button--small button--light" href="${bookingLinks.wanderHome}" target="_blank" rel="noopener noreferrer" aria-label="Check Waterfall Wonder dates and booking details with WanderHome; opens in a new tab">
+        Check Dates
         ${renderButtonIcon()}
       </a>
     </header>`;
@@ -89,16 +90,16 @@ function renderFooter(page) {
       </div>
       <nav aria-label="Footer links">
         <a href="${prefix}things-to-do-near-winona-falls/index.html">Local Guide</a>
-        <a href="${bookingLinks.wanderHome}" target="_blank" rel="noopener noreferrer">WanderHome</a>
-        <a href="${bookingLinks.airbnb}" target="_blank" rel="noopener noreferrer">Airbnb</a>
-        <a href="${bookingLinks.vrbo}" target="_blank" rel="noopener noreferrer">Vrbo</a>
-        <a href="${bookingLinks.instagram}" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="${bookingLinks.wanderHome}" target="_blank" rel="noopener noreferrer">Booking details<span class="visually-hidden">; opens in a new tab</span></a>
+        <a href="${bookingLinks.airbnb}" target="_blank" rel="noopener noreferrer">Airbnb<span class="visually-hidden">; opens in a new tab</span></a>
+        <a href="${bookingLinks.vrbo}" target="_blank" rel="noopener noreferrer">Vrbo<span class="visually-hidden">; opens in a new tab</span></a>
+        <a href="${bookingLinks.instagram}" target="_blank" rel="noopener noreferrer">Instagram<span class="visually-hidden">; opens in a new tab</span></a>
       </nav>
     </footer>`;
 }
 
 function renderMobileBooking() {
-  return `<a class="mobile-booking" href="${bookingLinks.wanderHome}" target="_blank" rel="noopener noreferrer">Book Waterfall Wonder</a>`;
+  return `<a class="mobile-booking" href="${bookingLinks.wanderHome}" target="_blank" rel="noopener noreferrer">Check dates &amp; booking details<span class="visually-hidden">; opens in a new tab</span></a>`;
 }
 
 function replaceRequired(text, pattern, replacement, label, file) {
@@ -108,6 +109,13 @@ function replaceRequired(text, pattern, replacement, label, file) {
   return text.replace(pattern, replacement);
 }
 
+function syncSharedChrome(text, page) {
+  text = replaceRequired(text, /<header class="site-header[^"]*"[\s\S]*?<\/header>/, renderHeader(page), "site header", page.file);
+  text = replaceRequired(text, /<footer class="site-footer">[\s\S]*?<\/footer>/, renderFooter(page), "site footer", page.file);
+  text = replaceRequired(text, /<a class="mobile-booking"[\s\S]*?<\/a>/, renderMobileBooking(), "mobile booking CTA", page.file);
+  return text;
+}
+
 function syncPage(text, page) {
   const url = absoluteUrl(page.path);
   const imageUrl = absoluteUrl(page.ogImage);
@@ -115,6 +123,19 @@ function syncPage(text, page) {
   const escapedDescription = escapeAttribute(page.description);
   const escapedOgTitle = escapeAttribute(page.ogTitle ?? page.title);
   const escapedOgDescription = escapeAttribute(page.ogDescription ?? page.description);
+
+  // When the production domain changes, replace the prior canonical base in
+  // structured data and other generated absolute URLs before syncing the
+  // individual metadata fields below.
+  const existingCanonical = text.match(/<link rel="canonical" href="([^"]*)">/)?.[1];
+  if (existingCanonical) {
+    const existingBase = page.path
+      ? existingCanonical.slice(0, -page.path.length)
+      : existingCanonical;
+    if (existingBase && existingBase !== publicDomain) {
+      text = text.replaceAll(existingBase, publicDomain);
+    }
+  }
 
   text = replaceRequired(text, /<title>[^<]*<\/title>/, `<title>${escapedTitle}</title>`, "title", page.file);
   text = replaceRequired(text, /<meta name="description" content="[^"]*">/, `<meta name="description" content="${escapedDescription}">`, "meta description", page.file);
@@ -126,28 +147,37 @@ function syncPage(text, page) {
   text = replaceRequired(text, /<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${escapedOgTitle}">`, "twitter:title", page.file);
   text = replaceRequired(text, /<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escapedOgDescription}">`, "twitter:description", page.file);
   text = replaceRequired(text, /<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${imageUrl}">`, "twitter:image", page.file);
-  text = replaceRequired(text, /<header class="site-header"[\s\S]*?<\/header>/, renderHeader(page), "site header", page.file);
-  text = replaceRequired(text, /<footer class="site-footer">[\s\S]*?<\/footer>/, renderFooter(page), "site footer", page.file);
-  text = replaceRequired(text, /<a class="mobile-booking"[\s\S]*?<\/a>/, renderMobileBooking(), "mobile booking CTA", page.file);
+  text = syncSharedChrome(text, page);
 
-  text = text.replace(/"dateModified":\s*"[^"]+"/g, `"dateModified": "${reviewedOn.iso}"`);
-  text = text.replace(/Last reviewed [A-Z][a-z]+ \d{1,2}, \d{4}/g, `Last reviewed ${reviewedOn.label}`);
-  text = text.replace(/as of the [A-Z][a-z]+ \d{1,2}(?:, \d{4})? review/gi, `as of the ${reviewedOn.label} review`);
-  text = text.replace(/As of the [A-Z][a-z]+ \d{1,2}, \d{4} review/g, `As of the ${reviewedOn.label} review`);
-  text = text.replace(/reviewed [A-Z][a-z]+ \d{1,2}, \d{4}/g, `reviewed ${reviewedOn.label}`);
-  text = text.replace(/checked [A-Z][a-z]+ \d{1,2}, \d{4}/g, `checked ${reviewedOn.label}`);
-  text = text.replace(/checked on [A-Z][a-z]+ \d{1,2}, \d{4}/g, `checked on ${reviewedOn.label}`);
+  // Page modification dates are page-specific. Source and claim verification
+  // dates are deliberately never rewritten by this synchronizer.
+  text = text.replace(/"dateModified":\s*"[^"]+"/g, `"dateModified": "${page.contentModifiedOn}"`);
 
   return text;
 }
 
-function syncSitemap(text) {
+function syncSitemap(text, copyRegistry) {
+  const existingHomeUrl = text.match(/<url>\s*<loc>([^<]+)<\/loc>/m)?.[1];
+  const configuredHomeUrl = absoluteUrl("");
+  if (existingHomeUrl && existingHomeUrl !== configuredHomeUrl) {
+    text = text.replaceAll(existingHomeUrl, configuredHomeUrl);
+  }
+
   for (const page of pages) {
     const loc = absoluteUrl(page.path);
+    const modifiedOn = effectiveContentModifiedOn(copyRegistry, page.file, page.contentModifiedOn);
     const urlBlockPattern = new RegExp(`(<url>\\s*<loc>${loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/loc>\\s*<lastmod>)([^<]+)(<\\/lastmod>)`, "m");
-    text = text.replace(urlBlockPattern, `$1${reviewedOn.iso}$3`);
+    text = text.replace(urlBlockPattern, `$1${modifiedOn}$3`);
   }
   return text;
+}
+
+function syncRobots(text) {
+  const sitemapUrl = absoluteUrl("sitemap.xml");
+  if (/^Sitemap:\s*.*$/im.test(text)) {
+    return text.replace(/^Sitemap:\s*.*$/im, `Sitemap: ${sitemapUrl}`);
+  }
+  return `${text.trimEnd()}\n\nSitemap: ${sitemapUrl}\n`;
 }
 
 function syncManifest(text) {
@@ -159,31 +189,60 @@ function syncManifest(text) {
 }
 
 const changed = [];
+const copyRegistry = await loadCopyRegistry();
 
 for (const page of pages) {
   const pagePath = path.join(root, page.file);
   const before = await readFile(pagePath, "utf8");
-  const after = syncPage(before, page);
+  const effectivePage = {
+    ...page,
+    contentModifiedOn: effectiveContentModifiedOn(copyRegistry, page.file, page.contentModifiedOn),
+  };
+  const synced = syncPage(before, effectivePage);
+  const after = applyCopyOverrides(synced, page.file, copyRegistry, { strict: true });
   if (after !== before) {
-    await writeFile(pagePath, after);
+    if (!checkOnly) await writeFile(pagePath, after);
     changed.push(page.file);
   }
 }
 
+const notFoundPage = { file: "404.html" };
+const notFoundPath = path.join(root, notFoundPage.file);
+const notFoundBefore = await readFile(notFoundPath, "utf8");
+const notFoundSynced = syncSharedChrome(notFoundBefore, notFoundPage);
+const notFoundAfter = applyCopyOverrides(notFoundSynced, notFoundPage.file, copyRegistry, { strict: true });
+if (notFoundAfter !== notFoundBefore) {
+  if (!checkOnly) await writeFile(notFoundPath, notFoundAfter);
+  changed.push(notFoundPage.file);
+}
+
 const sitemapPath = path.join(root, "sitemap.xml");
 const sitemapBefore = await readFile(sitemapPath, "utf8");
-const sitemapAfter = syncSitemap(sitemapBefore);
+const sitemapAfter = syncSitemap(sitemapBefore, copyRegistry);
 if (sitemapAfter !== sitemapBefore) {
-  await writeFile(sitemapPath, sitemapAfter);
+  if (!checkOnly) await writeFile(sitemapPath, sitemapAfter);
   changed.push("sitemap.xml");
+}
+
+const robotsPath = path.join(root, "robots.txt");
+const robotsBefore = await readFile(robotsPath, "utf8");
+const robotsAfter = syncRobots(robotsBefore);
+if (robotsAfter !== robotsBefore) {
+  if (!checkOnly) await writeFile(robotsPath, robotsAfter);
+  changed.push("robots.txt");
 }
 
 const manifestPath = path.join(root, "site.webmanifest");
 const manifestBefore = await readFile(manifestPath, "utf8");
 const manifestAfter = syncManifest(manifestBefore);
 if (manifestAfter !== manifestBefore) {
-  await writeFile(manifestPath, manifestAfter);
+  if (!checkOnly) await writeFile(manifestPath, manifestAfter);
   changed.push("site.webmanifest");
 }
 
-console.log(changed.length ? `Synced ${changed.length} files from site-data.` : "Site data already synced.");
+if (checkOnly) {
+  console.log(changed.length ? `Site-data drift found in ${changed.length} files: ${changed.join(", ")}` : "Site data already synced.");
+  if (changed.length) process.exitCode = 1;
+} else {
+  console.log(changed.length ? `Synced ${changed.length} files from site-data.` : "Site data already synced.");
+}

@@ -16,18 +16,24 @@ const profileDir = path.join(os.tmpdir(), "waterfall-wonder-edge-browser-qa");
 const minimumScreenshotBytes = 10 * 1024;
 const edgeFallbackCoverageWarning = "Microsoft Edge fallback checks rendered screenshots and local image references, but does not exercise page interactions or detect horizontal overflow; lower homepage section screenshots are isolated previews. Install Playwright for full browser QA.";
 
-const viewports = [
+const configuredViewports = [
+  { label: "reflow-320", width: 320, height: 640 },
   { label: "mobile", width: 390, height: 844 },
   { label: "tablet", width: 768, height: 1024 },
   { label: "desktop", width: 1440, height: 1000 }
 ];
+const viewports = process.env.QA_VIEWPORT_FILTER
+  ? configuredViewports.filter((viewport) => viewport.label === process.env.QA_VIEWPORT_FILTER)
+  : configuredViewports;
+const qaPages = pages.filter((page) =>
+  page.file !== "404.html" && (!process.env.QA_PAGE_FILTER || page.file === process.env.QA_PAGE_FILTER)
+);
 
 const defaultScreenshotTargets = [{ label: "top", hash: "" }];
 const homepageScreenshotTargets = [
   { label: "top", hash: "" },
   { label: "reviews", hash: "#reviews" },
   { label: "waterfall", hash: "#waterfall" },
-  { label: "night", hash: "#night" },
   { label: "gallery", hash: "#gallery" }
 ];
 
@@ -53,7 +59,10 @@ function parseTitle(dom) {
 }
 
 function screenshotTargetsFor(pageData) {
-  return pageData.file === "index.html" ? homepageScreenshotTargets : defaultScreenshotTargets;
+  const targets = pageData.file === "index.html" ? homepageScreenshotTargets : defaultScreenshotTargets;
+  return process.env.QA_TARGET_FILTER
+    ? targets.filter((target) => target.label === process.env.QA_TARGET_FILTER)
+    : targets;
 }
 
 function targetUrl(filePath, target) {
@@ -233,6 +242,9 @@ async function runWithPlaywright(playwright) {
   if (process.env.PLAYWRIGHT_CHANNEL) {
     launchOptions.channel = process.env.PLAYWRIGHT_CHANNEL;
   }
+  if (process.env.PLAYWRIGHT_EXECUTABLE_PATH) {
+    launchOptions.executablePath = path.resolve(process.env.PLAYWRIGHT_EXECUTABLE_PATH);
+  }
   const browser = await playwright.chromium.launch(launchOptions);
   const results = [];
 
@@ -245,9 +257,167 @@ async function runWithPlaywright(playwright) {
       if ((await navToggle.getAttribute("aria-expanded")) !== "true") {
         interactionErrors.push("mobile navigation did not open after toggle click");
       }
+
+      const navMetrics = await page.evaluate(() => {
+        const nav = document.querySelector("#primary-nav");
+        const toggle = document.querySelector("[data-nav-toggle]");
+        const navRect = nav?.getBoundingClientRect();
+        const toggleRect = toggle?.getBoundingClientRect();
+        const undersizedLinks = Array.from(nav?.querySelectorAll("a") ?? [])
+          .map((link) => ({ label: link.textContent.trim(), rect: link.getBoundingClientRect() }))
+          .filter(({ rect }) => rect.width < 44 || rect.height < 44)
+          .map(({ label, rect }) => `${label || "unnamed link"} (${Math.round(rect.width)}x${Math.round(rect.height)})`);
+
+        return {
+          navLeft: navRect?.left ?? null,
+          navRight: navRect?.right ?? null,
+          navWidth: navRect?.width ?? null,
+          viewportWidth: window.innerWidth,
+          toggleWidth: toggleRect?.width ?? null,
+          toggleHeight: toggleRect?.height ?? null,
+          undersizedLinks
+        };
+      });
+
+      if (navMetrics.navWidth === null || navMetrics.navWidth < navMetrics.viewportWidth - 2 || navMetrics.navLeft > 1 || navMetrics.navRight < navMetrics.viewportWidth - 1) {
+        interactionErrors.push(`mobile navigation does not stretch across the usable viewport (${Math.round(navMetrics.navWidth ?? 0)}px of ${navMetrics.viewportWidth}px)`);
+      }
+      if ((navMetrics.toggleWidth ?? 0) < 44 || (navMetrics.toggleHeight ?? 0) < 44) {
+        interactionErrors.push(`mobile navigation toggle is smaller than 44px (${Math.round(navMetrics.toggleWidth ?? 0)}x${Math.round(navMetrics.toggleHeight ?? 0)})`);
+      }
+      if (navMetrics.undersizedLinks.length) {
+        interactionErrors.push(`mobile navigation links are smaller than 44px: ${navMetrics.undersizedLinks.join(", ")}`);
+      }
+
+      const firstNavLink = page.locator("#primary-nav a").first();
+      await firstNavLink.focus();
+      await page.keyboard.press("Escape");
+      if ((await navToggle.getAttribute("aria-expanded")) !== "false") {
+        interactionErrors.push("mobile navigation did not close after Escape");
+      }
+      const navFocusRestored = await page.evaluate(() => document.activeElement === document.querySelector("[data-nav-toggle]"));
+      if (!navFocusRestored) {
+        interactionErrors.push("mobile navigation did not return focus to its toggle after Escape");
+      }
+      if (await page.locator("#primary-nav").isVisible()) {
+        interactionErrors.push("mobile navigation remained visible after Escape");
+      }
+      const navCleanupComplete = await page.evaluate(() => {
+        const backdrop = document.querySelector(".nav-backdrop");
+        return !document.body.classList.contains("is-nav-open") && !backdrop?.classList.contains("is-visible");
+      });
+      if (!navCleanupComplete) {
+        interactionErrors.push("mobile navigation did not clear its backdrop or page lock after Escape");
+      }
+
+      await navToggle.click();
       await navToggle.click();
       if ((await navToggle.getAttribute("aria-expanded")) !== "false") {
-        interactionErrors.push("mobile navigation did not close after second toggle click");
+        interactionErrors.push("mobile navigation did not close after a second toggle click");
+      }
+
+      const noJavaScriptFallback = await page.evaluate(() => {
+        document.documentElement.classList.remove("js");
+        const nav = document.querySelector("#primary-nav");
+        const toggle = document.querySelector("[data-nav-toggle]");
+        const navVisible = Boolean(nav && getComputedStyle(nav).display !== "none" && nav.getBoundingClientRect().height > 0);
+        const toggleHidden = Boolean(toggle && getComputedStyle(toggle).display === "none");
+        document.documentElement.classList.add("js");
+        return { navVisible, toggleHidden };
+      });
+      if (!noJavaScriptFallback.navVisible || !noJavaScriptFallback.toggleHidden) {
+        interactionErrors.push("mobile navigation has no usable no-JavaScript fallback");
+      }
+    }
+
+    const accessibilityFailures = await page.evaluate(() => {
+      const failures = [];
+      const rootStyles = getComputedStyle(document.documentElement);
+
+      function rgb(color) {
+        const value = color.trim();
+        if (/^#[0-9a-f]{6}$/i.test(value)) {
+          return [1, 3, 5].map((offset) => Number.parseInt(value.slice(offset, offset + 2), 16));
+        }
+        const match = value.match(/^rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/i);
+        return match ? match.slice(1, 4).map(Number) : null;
+      }
+
+      function luminance(color) {
+        const channels = rgb(color)?.map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+        });
+        return channels ? 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2] : null;
+      }
+
+      function contrast(foreground, background) {
+        const first = luminance(foreground);
+        const second = luminance(background);
+        if (first === null || second === null) return null;
+        return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+      }
+
+      const muted = rootStyles.getPropertyValue("--muted");
+      for (const backgroundName of ["--paper", "--cream"]) {
+        const background = rootStyles.getPropertyValue(backgroundName);
+        const ratio = contrast(muted, background);
+        if (ratio === null || ratio < 4.5) {
+          failures.push(`muted text contrast on ${backgroundName} is ${ratio?.toFixed(2) ?? "unreadable"}:1`);
+        }
+      }
+
+      const undersizedDots = Array.from(document.querySelectorAll(".review-carousel__dots button, .waterfall-carousel__dots button"))
+        .map((button) => ({ label: button.getAttribute("aria-label") || "carousel dot", rect: button.getBoundingClientRect() }))
+        .filter(({ rect }) => rect.width < 24 || rect.height < 24)
+        .map(({ label, rect }) => `${label} (${Math.round(rect.width)}x${Math.round(rect.height)})`);
+      if (undersizedDots.length) failures.push(`carousel dot targets are smaller than 24px: ${undersizedDots.join(", ")}`);
+
+      const unannouncedNewTabs = Array.from(document.querySelectorAll('a[target="_blank"]'))
+        .filter((link) => !((link.getAttribute("aria-label") || link.textContent).toLowerCase().includes("opens in a new tab")));
+      if (unannouncedNewTabs.length) failures.push(`${unannouncedNewTabs.length} new-tab link(s) do not announce their behavior`);
+
+      return failures;
+    });
+    interactionErrors.push(...accessibilityFailures);
+
+    if (viewport === "mobile" || viewport === "reflow-320") {
+      const footerLink = page.locator(".site-footer a").last();
+      if (await footerLink.count()) {
+        await footerLink.focus();
+        await footerLink.evaluate((link) => link.scrollIntoView({ block: "nearest" }));
+        await page.waitForTimeout(75);
+        const focusedControlObscured = await page.evaluate(() => {
+          const bookingBar = document.querySelector(".mobile-booking");
+          const focused = document.activeElement;
+          if (!bookingBar || !focused || getComputedStyle(bookingBar).display === "none" || bookingBar.classList.contains("is-hidden")) return false;
+          const barRect = bookingBar.getBoundingClientRect();
+          const focusRect = focused.getBoundingClientRect();
+          return focusRect.bottom > barRect.top && focusRect.top < barRect.bottom;
+        });
+        if (focusedControlObscured) {
+          interactionErrors.push("fixed booking bar obscures a focused footer control");
+        }
+      }
+    }
+
+    if (viewport === "reflow-320") {
+      await page.setViewportSize({ width: 320, height: 256 });
+      await page.evaluate(() => window.scrollTo(0, 320));
+      await page.waitForTimeout(75);
+      const shortViewportState = await page.evaluate(() => {
+        const bookingBar = document.querySelector(".mobile-booking");
+        return {
+          bookingVisible: Boolean(bookingBar && getComputedStyle(bookingBar).display !== "none" && !bookingBar.classList.contains("is-hidden")),
+          bookingFocusable: Boolean(bookingBar && bookingBar.tabIndex >= 0 && bookingBar.getAttribute("aria-hidden") !== "true"),
+          horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 2
+        };
+      });
+      if (shortViewportState.bookingVisible || shortViewportState.bookingFocusable) {
+        interactionErrors.push("fixed booking bar remains visible or focusable in a short zoom/landscape viewport");
+      }
+      if (shortViewportState.horizontalOverflow) {
+        interactionErrors.push("320px reflow check has horizontal overflow");
       }
     }
 
@@ -300,7 +470,7 @@ async function runWithPlaywright(playwright) {
     return interactionErrors.map((error) => `${viewport}: ${error}`);
   }
 
-  for (const pageData of pages.filter((page) => page.file !== "404.html")) {
+  for (const pageData of qaPages) {
     for (const target of screenshotTargetsFor(pageData)) {
       for (const viewport of viewports) {
       const page = await browser.newPage({
@@ -325,7 +495,7 @@ async function runWithPlaywright(playwright) {
           screenshots: true,
           renderedDom: true,
           javascriptErrors: true,
-          interactions: pageData.file === "index.html",
+          interactions: true,
           horizontalOverflow: true,
           imageNaturalSize: true,
           localImageReferences: true
@@ -348,6 +518,20 @@ async function runWithPlaywright(playwright) {
           images.filter((image) => !image.hasAttribute("alt")).map((image) => image.getAttribute("src") || image.currentSrc)
         ),
         horizontalOverflow: await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2),
+        horizontalOverflowSources: await page.evaluate(() =>
+          Array.from(document.querySelectorAll("body *"))
+            .map((element) => {
+              const rect = element.getBoundingClientRect();
+              return {
+                element: `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""}${typeof element.className === "string" && element.className ? `.${element.className.trim().replace(/\s+/g, ".")}` : ""}`,
+                left: Math.round(rect.left),
+                right: Math.round(rect.right),
+                width: Math.round(rect.width)
+              };
+            })
+            .filter(({ left, right }) => left < -2 || right > window.innerWidth + 2)
+            .slice(0, 20)
+        ),
         bookingLinkCount: await page.locator('a[href*="gowanderhome.com"], a[href*="airbnb.com"], a[href*="vrbo.com"]').count(),
         screenshotPath,
         screenshotBytes: imageStats.size,
@@ -378,7 +562,7 @@ async function runWithEdge(edgePath) {
     });
   }
 
-  for (const pageData of pages.filter((page) => page.file !== "404.html")) {
+  for (const pageData of qaPages) {
     for (const target of screenshotTargetsFor(pageData)) {
       for (const viewport of viewports) {
       const filePath = path.join(root, ...pageData.file.split("/"));
@@ -418,6 +602,7 @@ async function runWithEdge(edgePath) {
         brokenImages: imageIssues.brokenImages,
         missingAlt: imageIssues.missingAlt,
         horizontalOverflow: null,
+        horizontalOverflowSources: [],
         bookingLinkCount: countBookingLinks(dom),
         screenshotPath,
         screenshotBytes: imageStats.size,

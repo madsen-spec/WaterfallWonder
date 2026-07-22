@@ -26,7 +26,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Build and validate static site
+      - name: Build, validate, and package for Cloudflare Pages
         run: npm run build
 
       - name: Run rendered browser QA
