@@ -33,7 +33,10 @@ const requiredFiles = [
   "scripts/visual-copy-editor/bridge.js",
   "Start Visual Copy Editor.cmd"
 ];
-const forbiddenEntries = ["node_modules", ".env", ".env.local", ".env.production", "secrets", "credentials"];
+// Dependency installs are expected in the source workspace and are excluded
+// from both this validator's file walk and the Cloudflare package. Secrets and
+// environment files must never be present in the public source package.
+const forbiddenEntries = [".env", ".env.local", ".env.production", "secrets", "credentials"];
 const sensitivePattern = /(api[_-]?key|client[_-]?secret|password|passwd|private key|begin rsa|begin openssh|github_pat_|ghp_|sk_live|aws_secret|smtp_password)/i;
 const privateWorkspacePattern = /(G:\\|My Drive|Sorted Photos|01_Source_ReadOnly|02_Sandbox_Copies|03_Outputs|04_Scripts|05_Indexes|06_Logs|site_versions|qa_screenshots)/i;
 const conservativeClaimPattern = /\b(luxury|top\s+\d+|#1)\b/i;

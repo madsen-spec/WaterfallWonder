@@ -17,6 +17,14 @@ function sha256(value) {
   return createHash("sha256").update(String(value), "utf8").digest("hex");
 }
 
+function normalizeCopyHtml(value) {
+  return String(value).replace(/\r\n?/g, "\n");
+}
+
+function copyHash(value) {
+  return sha256(normalizeCopyHtml(value));
+}
+
 function normalizePagePath(pagePath) {
   const normalized = String(pagePath || "index.html").replaceAll("\\", "/").replace(/^\/+/, "");
   if (!normalized || normalized === ".") return "index.html";
@@ -202,18 +210,22 @@ function faqBindingsFor(html, entries) {
 }
 
 function persistedEntry(entry, existingEntry = null) {
-  const currentHash = sha256(entry.sourceHtml);
-  if (existingEntry && (currentHash === existingEntry.sourceHash || currentHash === existingEntry.overrideHash)) {
+  const currentHash = copyHash(entry.sourceHtml);
+  const existingSourceHash = existingEntry ? copyHash(existingEntry.sourceHtml) : null;
+  const existingOverrideHash = existingEntry?.overrideHtml == null ? null : copyHash(existingEntry.overrideHtml);
+  if (existingEntry && (currentHash === existingSourceHash || currentHash === existingOverrideHash)) {
+    const sourceHtml = normalizeCopyHtml(existingEntry.sourceHtml);
+    const overrideHtml = existingEntry.overrideHtml == null ? null : normalizeCopyHtml(existingEntry.overrideHtml);
     return {
       id: existingEntry.id,
       tag: existingEntry.tag,
       ordinal: existingEntry.ordinal,
       kind: existingEntry.kind,
-      sourceHtml: existingEntry.sourceHtml,
+      sourceHtml,
       sourceText: existingEntry.sourceText,
-      sourceHash: existingEntry.sourceHash,
-      overrideHtml: existingEntry.overrideHtml ?? null,
-      overrideHash: existingEntry.overrideHash ?? null,
+      sourceHash: copyHash(sourceHtml),
+      overrideHtml,
+      overrideHash: overrideHtml == null ? null : copyHash(overrideHtml),
       updatedAt: existingEntry.updatedAt ?? null,
       updatedBy: existingEntry.updatedBy ?? null,
       schemaBindings: existingEntry.schemaBindings?.length ? existingEntry.schemaBindings : entry.schemaBindings,
@@ -267,7 +279,8 @@ export function discoverEditableCopy(html, pagePath) {
     if (tag === "a" && !inFooter && !classes.has("button") && !classes.has("mobile-booking") && !classes.has("text-link")) continue;
     if (tag === "button" && !classes.has("button") && !classes.has("cta") && attributes.get("role") !== "button") continue;
 
-    const innerHtml = match[3];
+    const rawInnerHtml = match[3];
+    const innerHtml = normalizeCopyHtml(rawInnerHtml);
     const sourceText = visibleText(innerHtml);
     if (!sourceText) continue;
     const ordinal = (ordinals.get(tag) || 0) + 1;
@@ -279,7 +292,7 @@ export function discoverEditableCopy(html, pagePath) {
     else if (inFooter) kind = "footer";
     else if (tag === "a" || tag === "button") kind = "cta";
 
-    const innerOffset = match[0].indexOf(innerHtml, openTag.length);
+    const innerOffset = match[0].indexOf(rawInnerHtml, openTag.length);
     entries.push({
       id: `${pageKey}--${tag}-${String(ordinal).padStart(3, "0")}`,
       tag,
@@ -287,7 +300,7 @@ export function discoverEditableCopy(html, pagePath) {
       kind,
       sourceHtml: innerHtml,
       sourceText,
-      sourceHash: sha256(innerHtml),
+      sourceHash: copyHash(innerHtml),
       overrideHtml: null,
       overrideHash: null,
       updatedAt: null,
@@ -296,7 +309,7 @@ export function discoverEditableCopy(html, pagePath) {
       openStart: match.index,
       openEnd: match.index + openTag.length,
       innerStart: match.index + innerOffset,
-      innerEnd: match.index + innerOffset + innerHtml.length,
+      innerEnd: match.index + innerOffset + rawInnerHtml.length,
     });
   }
 
@@ -366,6 +379,8 @@ function applySchemaBindings(html, page) {
 
 export function assertSafeCopyHtml(sourceHtml, replacementHtml) {
   if (typeof sourceHtml !== "string" || typeof replacementHtml !== "string") throw new Error("Copy HTML must be text.");
+  sourceHtml = normalizeCopyHtml(sourceHtml);
+  replacementHtml = normalizeCopyHtml(replacementHtml);
   if (replacementHtml.length > MAX_HTML_LENGTH) throw new Error(`Copy field exceeds ${MAX_HTML_LENGTH} characters.`);
   const text = visibleText(replacementHtml);
   if (!text) throw new Error("Copy cannot be empty.");
@@ -404,7 +419,7 @@ export function applyCopyOverrides(html, pagePath, registry, { instrument = fals
       if (strict) throw new Error(`Copy field is missing from ${page.path}: ${entry.id}`);
       continue;
     }
-    const currentHash = sha256(current.sourceHtml);
+    const currentHash = copyHash(current.sourceHtml);
     if (strict && currentHash !== entry.sourceHash && currentHash !== entry.overrideHash) {
       throw new Error(`Unmanaged copy drift in ${page.path}: ${entry.id}`);
     }
@@ -436,7 +451,7 @@ export function instrumentHtml(html, pagePath, registry = null, { strict = true 
       if (strict) throw new Error(`Copy field is missing from ${page.path}: ${entry.id}`);
       continue;
     }
-    const currentHash = sha256(current.sourceHtml);
+    const currentHash = copyHash(current.sourceHtml);
     const state = currentHash === entry.overrideHash ? "overridden" : "source";
     if (strict && currentHash !== entry.sourceHash && currentHash !== entry.overrideHash) throw new Error(`Unmanaged copy drift in ${page.path}: ${entry.id}`);
     const attributes = ` data-copy-id="${escapeAttribute(entry.id)}" data-copy-kind="${escapeAttribute(entry.kind)}" data-copy-source-hash="${entry.sourceHash}" data-copy-state="${state}"`;
@@ -470,6 +485,7 @@ export function setCopyOverride(registry, copyId, replacementHtml, { expectedSou
   }
   if (!target) throw new Error(`Unknown copy id: ${copyId}`);
   if (expectedSourceHash && expectedSourceHash !== target.sourceHash) throw new Error(`Source revision changed for ${copyId}`);
+  replacementHtml = normalizeCopyHtml(replacementHtml);
   assertSafeCopyHtml(target.sourceHtml, replacementHtml);
   if (replacementHtml === target.sourceHtml) {
     target.overrideHtml = null;
@@ -478,7 +494,7 @@ export function setCopyOverride(registry, copyId, replacementHtml, { expectedSou
     target.updatedBy = null;
   } else {
     target.overrideHtml = replacementHtml;
-    target.overrideHash = sha256(replacementHtml);
+    target.overrideHash = copyHash(replacementHtml);
     target.updatedAt = updatedAt || new Date().toISOString();
     target.updatedBy = updatedBy || "Visual Copy Editor";
   }
@@ -552,12 +568,12 @@ export async function validateCopyRegistry(registry, { rootDir = PUBLIC_ROOT, pa
       ids.add(entry.id);
       if (!EDITABLE_TAGS.has(entry.tag)) errors.push(`Unsupported copy tag ${entry.tag}: ${entry.id}`);
       if (!ALLOWED_KINDS.has(entry.kind)) errors.push(`Unsupported copy kind ${entry.kind}: ${entry.id}`);
-      if (sha256(entry.sourceHtml || "") !== entry.sourceHash) errors.push(`Source hash mismatch: ${entry.id}`);
+      if (copyHash(entry.sourceHtml || "") !== entry.sourceHash) errors.push(`Source hash mismatch: ${entry.id}`);
       if (!visibleText(entry.sourceHtml || "")) errors.push(`Source copy is empty: ${entry.id}`);
       if (entry.overrideHtml != null) {
         overrideCount += 1;
         try { assertSafeCopyHtml(entry.sourceHtml, entry.overrideHtml); } catch (error) { errors.push(`${entry.id}: ${error.message}`); }
-        if (sha256(entry.overrideHtml) !== entry.overrideHash) errors.push(`Override hash mismatch: ${entry.id}`);
+        if (copyHash(entry.overrideHtml) !== entry.overrideHash) errors.push(`Override hash mismatch: ${entry.id}`);
       } else if (entry.overrideHash != null) {
         errors.push(`Override hash exists without override copy: ${entry.id}`);
       }
@@ -566,7 +582,7 @@ export async function validateCopyRegistry(registry, { rootDir = PUBLIC_ROOT, pa
         errors.push(`Registered copy field is missing from ${page.path}: ${entry.id}`);
         continue;
       }
-      const liveHash = sha256(live.sourceHtml);
+      const liveHash = copyHash(live.sourceHtml);
       if (liveHash !== entry.sourceHash && liveHash !== entry.overrideHash) errors.push(`Unmanaged copy drift in ${page.path}: ${entry.id}`);
       const desiredHash = entry.overrideHash ?? entry.sourceHash;
       if (requireApplied && liveHash !== desiredHash) errors.push(`Governed copy is not applied in ${page.path}: ${entry.id}`);
