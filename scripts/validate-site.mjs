@@ -1,13 +1,14 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { officialSources, pages as registeredPages, propertyImageRegistry, publicDomain, reviewedOn } from "./site-data.mjs";
+import { claimRegistry, officialSources, pages as registeredPages, propertyImageRegistry, publicDomain } from "./site-data.mjs";
+import { effectiveContentModifiedOn, loadCopyRegistry } from "./visual-copy-model.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const publicUrl = new URL(publicDomain);
 const publicBasePath = publicUrl.pathname.replace(/\/$/, "");
 const expectedManifestBase = publicUrl.pathname || "/";
-const textExtensions = new Set([".html", ".css", ".js", ".json", ".svg", ".xml", ".txt", ".md", ".webmanifest", ".yml", ".yaml"]);
+const textExtensions = new Set([".html", ".css", ".js", ".mjs", ".json", ".jsonl", ".svg", ".xml", ".txt", ".md", ".cmd", ".ps1", ".webmanifest", ".yml", ".yaml"]);
 const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg"]);
 const requiredFiles = [
   "index.html",
@@ -18,11 +19,24 @@ const requiredFiles = [
   "sitemap.xml",
   "SOURCE_LEDGER.csv",
   "SOURCE_LEDGER.md",
-  ".nojekyll",
+  "_headers",
   "CONTENT_SOURCES.md",
-  "MAINTENANCE_CHECKLIST.md"
+  "MAINTENANCE_CHECKLIST.md",
+  "content/visual-copy.json",
+  "scripts/visual-copy-model.mjs",
+  "scripts/visual-copy-server.mjs",
+  "scripts/build-cloudflare.mjs",
+  "scripts/validate-visual-copy.mjs",
+  "scripts/visual-copy-editor/index.html",
+  "scripts/visual-copy-editor/editor.css",
+  "scripts/visual-copy-editor/editor.js",
+  "scripts/visual-copy-editor/bridge.js",
+  "Start Visual Copy Editor.cmd"
 ];
-const forbiddenEntries = ["node_modules", ".env", ".env.local", ".env.production", "secrets", "credentials"];
+// Dependency installs are expected in the source workspace and are excluded
+// from both this validator's file walk and the Cloudflare package. Secrets and
+// environment files must never be present in the public source package.
+const forbiddenEntries = [".env", ".env.local", ".env.production", "secrets", "credentials"];
 const sensitivePattern = /(api[_-]?key|client[_-]?secret|password|passwd|private key|begin rsa|begin openssh|github_pat_|ghp_|sk_live|aws_secret|smtp_password)/i;
 const privateWorkspacePattern = /(G:\\|My Drive|Sorted Photos|01_Source_ReadOnly|02_Sandbox_Copies|03_Outputs|04_Scripts|05_Indexes|06_Logs|site_versions|qa_screenshots)/i;
 const conservativeClaimPattern = /\b(luxury|top\s+\d+|#1)\b/i;
@@ -30,6 +44,13 @@ const oversizedImageBytes = 800 * 1024;
 const totalImageWarningBytes = 35 * 1024 * 1024;
 const staleDateWarningDays = 60;
 const forbiddenStructuredDataFields = new Set(["streetAddress", "postalCode", "geo", "latitude", "longitude", "telephone", "email"]);
+const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+const allowedVerificationStatuses = new Set(["verified", "recheck-required", "blocked"]);
+const allowedClaimStatuses = new Set(["verified", "recheck-required", "blocked", "owner-review", "owner-confirmed"]);
+const allowedClaimStabilities = new Set(["stable-property", "volatile", "owner-only"]);
+const allowedPropertyImageStatuses = new Set(["owner-approved public derivative"]);
+const localEditorPrefix = "scripts/visual-copy-editor/";
+const retiredPublicDomain = "https://madsen-spec.github.io/WaterfallWonder/";
 
 const errors = [];
 const warnings = [];
@@ -38,6 +59,11 @@ const registeredPageMap = new Map(registeredPages.map((page) => [page.file, page
 const seenTitles = new Map();
 const seenDescriptions = new Map();
 const imageRegistryKeys = new Set(propertyImageRegistry.map((image) => imageKey(image.file)));
+const propertyImageRegistryFiles = new Set(propertyImageRegistry.map((image) => image.file.replaceAll("\\", "/")));
+const copyRegistry = await loadCopyRegistry().catch((error) => {
+  errors.push(`Unable to load governed visual copy: ${error.message}`);
+  return null;
+});
 
 function imageKey(reference) {
   const filename = path.basename(reference).replace(/\.(jpe?g|webp|png|gif|svg)$/i, "");
@@ -50,11 +76,35 @@ function isPropertyImage(reference) {
   return /\.(jpe?g|webp|png)$/i.test(filename);
 }
 
+function parseCsvLine(line) {
+  const values = [];
+  let value = "";
+  let quoted = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+    if (character === '"') {
+      if (quoted && line[index + 1] === '"') {
+        value += '"';
+        index += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (character === "," && !quoted) {
+      values.push(value);
+      value = "";
+    } else {
+      value += character;
+    }
+  }
+  values.push(value);
+  return values;
+}
+
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
-    if (entry.name === ".git" || entry.name === "node_modules") continue;
+    if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "dist") continue;
     const fullPath = path.join(directory, entry.name);
     if (entry.isDirectory()) {
       files.push(...await walk(fullPath));
@@ -212,16 +262,20 @@ for (const file of files) {
   if (!textExtensions.has(extension)) continue;
 
   const text = await readFile(file, "utf8");
-  if (sensitivePattern.test(text)) {
-    warnings.push(`Review possible sensitive wording in ${displayPath(file)}`);
+  const relPath = displayPath(file);
+  if (text.includes(retiredPublicDomain) && relPath !== "scripts/validate-site.mjs") {
+    errors.push(`Retired GitHub Pages production URL remains in ${relPath}`);
   }
-  if (privateWorkspacePattern.test(text)) {
-    errors.push(`Public package appears to mention a private workspace/source path in ${displayPath(file)}`);
+  if (sensitivePattern.test(text) && relPath !== "scripts/validate-site.mjs") {
+    warnings.push(`Review possible sensitive wording in ${relPath}`);
   }
-  if (conservativeClaimPattern.test(text) && displayPath(file) !== "scripts/validate-site.mjs") {
-    warnings.push(`Review marketing/testimonial wording for support in ${displayPath(file)}`);
+  if (privateWorkspacePattern.test(text) && relPath !== "scripts/validate-site.mjs") {
+    errors.push(`Public package appears to mention a private workspace/source path in ${relPath}`);
   }
-  if (displayPath(file).startsWith(".github/workflows/")) {
+  if (conservativeClaimPattern.test(text) && relPath !== "scripts/validate-site.mjs") {
+    warnings.push(`Review marketing/testimonial wording for support in ${relPath}`);
+  }
+  if (relPath.startsWith(".github/workflows/")) {
     const deploymentPatterns = [
       /\bpages:\s*write\b/i,
       /actions\/deploy-pages/i,
@@ -236,10 +290,32 @@ for (const file of files) {
     }
   }
 
-  if (extension === ".html") {
+  if (extension === ".html" && !displayPath(file).startsWith(localEditorPrefix)) {
     const rel = displayPath(file);
     const registeredPage = registeredPageMap.get(rel);
     htmlTexts.set(file, text);
+
+    if (/(?:\/__editor\b|scripts\/visual-copy-editor\/)/i.test(text)) {
+      errors.push(`Public page links to the local Visual Copy Editor in ${rel}`);
+    }
+    if (/\bdata-copy-id\s*=/i.test(text)) {
+      errors.push(`Local Visual Copy Editor instrumentation leaked into public HTML: ${rel}`);
+    }
+
+    if (rel === "404.html") {
+      for (const requiredRootReference of [
+        'href="/favicon.svg"',
+        'href="/site.webmanifest"',
+        'href="/styles.css"',
+        'href="/"',
+        'href="/things-to-do-near-winona-falls/"',
+        'src="/script.js"'
+      ]) {
+        if (!text.includes(requiredRootReference)) {
+          errors.push(`Cloudflare 404 page is missing root-relative reference ${requiredRootReference}`);
+        }
+      }
+    }
 
     if (!/^<!doctype html>/i.test(text.trimStart())) {
       errors.push(`HTML page is missing <!doctype html>: ${rel}`);
@@ -258,6 +334,24 @@ for (const file of files) {
     }
     if (!/<main\b[^>]*\bid=["']main["'][^>]*>/i.test(text)) {
       errors.push(`HTML page is missing <main id="main">: ${rel}`);
+    }
+
+    const primaryNav = text.match(/<nav\b[^>]*class=["'][^"']*\bprimary-nav\b[^"']*["'][^>]*>[\s\S]*?<\/nav>/i)?.[0] ?? "";
+    const requiredNavLabels = [
+      ["House", />House</],
+      ["Waterfall", />Waterfall</],
+      ["Sleeping & Group Fit", />Sleeping (?:&|&amp;) Group Fit</],
+      ["Local Guide", />Local Guide</],
+      ["Safety / FAQ", />Safety \/ FAQ</],
+    ];
+    for (const [label, pattern] of requiredNavLabels) {
+      if (!pattern.test(primaryNav)) errors.push(`Primary navigation is missing "${label}" in ${rel}`);
+    }
+    if (!/href=["'][^"']*guest-guide\/safety-and-access-notes\/index\.html["'][^>]*>Safety \/ FAQ</i.test(primaryNav)) {
+      errors.push(`Primary navigation has the wrong Safety / FAQ destination in ${rel}`);
+    }
+    if (/>\s*(?:Book Direct|See Open Dates|Book Waterfall Wonder|Book the Cabin)\s*</i.test(text)) {
+      errors.push(`Legacy booking CTA label remains in ${rel}`);
     }
 
     const h1Count = Array.from(text.matchAll(/<h1\b/gi)).length;
@@ -345,7 +439,10 @@ for (const file of files) {
           errors.push(`JSON-LD exposes private/contact location field in ${rel}: ${fieldPath}`);
         }
         const parsedText = JSON.stringify(parsed);
-        if (registeredPage && !parsedText.includes(`"dateModified":"${reviewedOn.iso}"`)) {
+        const expectedModifiedOn = registeredPage
+          ? effectiveContentModifiedOn(copyRegistry, registeredPage.file, registeredPage.contentModifiedOn)
+          : "";
+        if (registeredPage && !parsedText.includes(`"dateModified":"${expectedModifiedOn}"`)) {
           errors.push(`JSON-LD dateModified is not synced in ${rel}`);
         }
       } catch (error) {
@@ -411,20 +508,22 @@ for (const file of files) {
     }
   }
 
-  for (const [ref, target] of collectReferences(file, text)) {
-    if (ref.includes("assets/images/") && isPropertyImage(ref) && !imageRegistryKeys.has(imageKey(ref))) {
-      errors.push(`Property image reference is missing from public image registry in ${displayPath(file)}: ${ref}`);
-    }
-    try {
-      const targetStat = await stat(target);
-      if (targetStat.isDirectory()) {
-        const indexStat = await stat(path.join(target, "index.html")).catch(() => null);
-        if (!indexStat?.isFile()) errors.push(`Reference is not a file or page folder in ${displayPath(file)}: ${ref}`);
-      } else if (!targetStat.isFile()) {
-        errors.push(`Reference is not a file in ${displayPath(file)}: ${ref}`);
+  if (extension !== ".mjs" && extension !== ".cmd" && extension !== ".ps1") {
+    for (const [ref, target] of collectReferences(file, text)) {
+      if (ref.includes("assets/images/") && isPropertyImage(ref) && !imageRegistryKeys.has(imageKey(ref))) {
+        errors.push(`Property image reference is missing from public image registry in ${displayPath(file)}: ${ref}`);
       }
-    } catch {
-      errors.push(`Broken local reference in ${displayPath(file)}: ${ref}`);
+      try {
+        const targetStat = await stat(target);
+        if (targetStat.isDirectory()) {
+          const indexStat = await stat(path.join(target, "index.html")).catch(() => null);
+          if (!indexStat?.isFile()) errors.push(`Reference is not a file or page folder in ${displayPath(file)}: ${ref}`);
+        } else if (!targetStat.isFile()) {
+          errors.push(`Reference is not a file in ${displayPath(file)}: ${ref}`);
+        }
+      } catch {
+        errors.push(`Broken local reference in ${displayPath(file)}: ${ref}`);
+      }
     }
   }
 }
@@ -447,9 +546,15 @@ for (const rel of ["robots.txt", "sitemap.xml", "index.html"]) {
   if (!text.includes(publicDomain)) {
     warnings.push(`${rel} does not include configured public domain ${publicDomain}`);
   }
+  if (/(?:\/__editor\b|scripts\/visual-copy-editor\/)/i.test(text)) {
+    errors.push(`${rel} must not reference the local Visual Copy Editor.`);
+  }
 }
 
 const manifestText = await readFile(path.join(root, "site.webmanifest"), "utf8");
+if (/(?:\/__editor\b|scripts\/visual-copy-editor\/)/i.test(manifestText)) {
+  errors.push("site.webmanifest must not reference the local Visual Copy Editor.");
+}
 try {
   const manifest = JSON.parse(manifestText);
   if (manifest.start_url !== expectedManifestBase) {
@@ -489,7 +594,7 @@ try {
 const htmlPages = files
   .filter((file) => path.extname(file).toLowerCase() === ".html")
   .map((file) => displayPath(file))
-  .filter((rel) => rel !== "404.html")
+  .filter((rel) => rel !== "404.html" && !rel.startsWith(localEditorPrefix))
   .sort();
 
 const sitemapPages = Array.from(sitemap.matchAll(/<loc>(https?:\/\/[^<]+)<\/loc>/g))
@@ -533,7 +638,8 @@ for (const page of registeredPages) {
     errors.push(`sitemap.xml is missing registered page URL: ${pageUrl}`);
     continue;
   }
-  if (!block.includes(`<lastmod>${reviewedOn.iso}</lastmod>`)) {
+  const expectedModifiedOn = effectiveContentModifiedOn(copyRegistry, page.file, page.contentModifiedOn);
+  if (!block.includes(`<lastmod>${expectedModifiedOn}</lastmod>`)) {
     errors.push(`sitemap.xml lastmod is not synced for ${page.file}`);
   }
   const expectedImage = new URL(page.ogImage, publicDomain).toString();
@@ -567,12 +673,28 @@ for (const image of propertyImageRegistry) {
   if (!image.status || !image.sourceCategory || !image.use) {
     errors.push(`Property image registry entry is missing public-safe governance fields: ${image.file}`);
   }
+  if (!allowedPropertyImageStatuses.has(image.status)) {
+    errors.push("Property image registry entry has an invalid approval status: " + image.file + " -> " + image.status);
+  }
+  if (image.approvedForPublicUse !== true || !isoDatePattern.test(image.approvedOn ?? "")) {
+    errors.push(`Property image registry entry is missing dated owner approval: ${image.file}`);
+  }
 }
 
 const registeredPageFiles = new Set(registeredPages.map((page) => page.file));
+for (const page of registeredPages) {
+  const registeredOgImage = page.ogImage.replaceAll("\\", "/");
+  if (!propertyImageRegistryFiles.has(registeredOgImage)) {
+    errors.push("Registered page Open Graph image is missing from the approved image registry: " + page.file + " -> " + page.ogImage);
+  }
+  if (!isoDatePattern.test(page.contentModifiedOn ?? "")) {
+    errors.push(`Registered page is missing a page-specific ISO contentModifiedOn date: ${page.file}`);
+  }
+}
+
 const sourceIds = new Set();
 for (const source of officialSources) {
-  for (const field of ["id", "name", "url", "sourceType", "topic", "claims", "volatility", "nextReview"]) {
+  for (const field of ["id", "name", "url", "sourceType", "topic", "claims", "volatility", "verificationStatus", "lastCheckedOn", "lastVerifiedOn", "verificationNote", "nextReview"]) {
     if (!source[field]) errors.push(`Official source is missing ${field}: ${source.name ?? "(unnamed source)"}`);
   }
   if (source.id) {
@@ -583,6 +705,18 @@ for (const source of officialSources) {
     new URL(source.url);
   } catch {
     errors.push(`Official source has invalid URL: ${source.name}`);
+  }
+  if (!allowedVerificationStatuses.has(source.verificationStatus)) {
+    errors.push(`Official source has invalid verificationStatus ${source.verificationStatus}: ${source.name}`);
+  }
+  if (!isoDatePattern.test(source.lastCheckedOn ?? "")) {
+    errors.push(`Official source has invalid lastCheckedOn date: ${source.name}`);
+  }
+  if (!isoDatePattern.test(source.lastVerifiedOn ?? "")) {
+    errors.push(`Official source has invalid lastVerifiedOn date: ${source.name}`);
+  }
+  if (isoDatePattern.test(source.lastCheckedOn ?? "") && isoDatePattern.test(source.lastVerifiedOn ?? "") && source.lastVerifiedOn > source.lastCheckedOn) {
+    errors.push(`Official source lastVerifiedOn is later than lastCheckedOn: ${source.name}`);
   }
   if (!Array.isArray(source.pages) || source.pages.length === 0) {
     errors.push(`Official source has no page coverage: ${source.name}`);
@@ -595,9 +729,125 @@ for (const source of officialSources) {
 
 const sourceLedgerCsv = await readFile(path.join(root, "SOURCE_LEDGER.csv"), "utf8").catch(() => "");
 const sourceLedgerMd = await readFile(path.join(root, "SOURCE_LEDGER.md"), "utf8").catch(() => "");
+const sourceLedgerRows = sourceLedgerCsv
+  .split(/\r?\n/)
+  .filter((line) => line.length > 0)
+  .map(parseCsvLine);
+const sourceLedgerHeader = sourceLedgerRows[0] ?? [];
+const ledgerFieldIndexes = new Map(sourceLedgerHeader.map((field, index) => [field, index]));
+for (const field of ["claimId", "sourceId", "ownerConfirmedOn", "ownerConfirmationNote"]) {
+  if (!ledgerFieldIndexes.has(field)) errors.push("Generated SOURCE_LEDGER.csv is missing field: " + field);
+}
+const ledgerClaimIdIndex = ledgerFieldIndexes.get("claimId") ?? -1;
+const ledgerSourceIdIndex = ledgerFieldIndexes.get("sourceId") ?? -1;
+const ledgerOwnerDateIndex = ledgerFieldIndexes.get("ownerConfirmedOn") ?? -1;
+const ledgerOwnerNoteIndex = ledgerFieldIndexes.get("ownerConfirmationNote") ?? -1;
+const sourceLedgerPairs = new Set(sourceLedgerRows.slice(1).map((row) =>
+  (row[ledgerClaimIdIndex] ?? "") + "|" + (row[ledgerSourceIdIndex] ?? "")
+));
 for (const source of officialSources) {
-  if (!sourceLedgerCsv.includes(source.id) || !sourceLedgerMd.includes(source.id)) {
+  if (!sourceLedgerMd.includes(source.id)) {
     errors.push(`Generated source ledger is missing official source id: ${source.id}`);
+  }
+}
+
+const claimIds = new Set();
+for (const claim of claimRegistry) {
+  for (const field of ["id", "stability", "claim", "publicValue", "status", "cadence", "owner"]) {
+    if (!claim[field]) errors.push(`Claim registry entry is missing ${field}: ${claim.id ?? "(unnamed claim)"}`);
+  }
+  if (claim.id) {
+    if (claimIds.has(claim.id)) errors.push(`Duplicate claim registry id: ${claim.id}`);
+    claimIds.add(claim.id);
+  }
+  if (!allowedClaimStabilities.has(claim.stability)) {
+    errors.push(`Claim registry entry has invalid stability ${claim.stability}: ${claim.id}`);
+  }
+  if (!allowedClaimStatuses.has(claim.status)) {
+    errors.push(`Claim registry entry has invalid status ${claim.status}: ${claim.id}`);
+  }
+  if (!Array.isArray(claim.pages) || claim.pages.length === 0) {
+    errors.push(`Claim registry entry has no page coverage: ${claim.id}`);
+  } else {
+    for (const page of claim.pages) {
+      if (!registeredPageFiles.has(page)) errors.push(`Claim registry entry references unknown page ${page}: ${claim.id}`);
+    }
+  }
+  if (!Array.isArray(claim.evidence)) {
+    errors.push(`Claim registry entry is missing its evidence array: ${claim.id}`);
+    continue;
+  }
+  if (claim.stability === "volatile" && claim.evidence.length === 0) {
+    errors.push(`Volatile claim has no claim/source-specific evidence: ${claim.id}`);
+  }
+  if (claim.stability === "owner-only" && !["owner-review", "owner-confirmed"].includes(claim.status)) {
+    errors.push("Owner-only claim must have owner-review or owner-confirmed status: " + claim.id);
+  }
+  if (claim.status === "owner-confirmed") {
+    if (claim.stability !== "owner-only") errors.push("Owner-confirmed claim must be owner-only: " + claim.id);
+    if (!isoDatePattern.test(claim.ownerConfirmedOn ?? "")) errors.push("Owner-confirmed claim is missing ownerConfirmedOn: " + claim.id);
+    if (!claim.ownerConfirmationNote) errors.push("Owner-confirmed claim is missing ownerConfirmationNote: " + claim.id);
+  } else if (claim.ownerConfirmedOn || claim.ownerConfirmationNote) {
+    errors.push("Non-owner-confirmed claim contains owner-confirmation fields: " + claim.id);
+  }
+
+  let hasVerifiedEvidence = false;
+  for (const evidence of claim.evidence) {
+    if (!sourceIds.has(evidence.sourceId)) {
+      errors.push(`Claim evidence references unknown source ${evidence.sourceId}: ${claim.id}`);
+    }
+    if (!allowedVerificationStatuses.has(evidence.status)) {
+      errors.push(`Claim evidence has invalid status ${evidence.status}: ${claim.id}/${evidence.sourceId}`);
+    }
+    if (!evidence.note) errors.push(`Claim evidence is missing a verification note: ${claim.id}/${evidence.sourceId}`);
+    if (!isoDatePattern.test(evidence.lastCheckedOn ?? "")) {
+      errors.push(`Claim evidence has invalid lastCheckedOn date: ${claim.id}/${evidence.sourceId}`);
+    }
+    if (!isoDatePattern.test(evidence.lastVerifiedOn ?? "")) {
+      errors.push(`Claim evidence has invalid lastVerifiedOn date: ${claim.id}/${evidence.sourceId}`);
+    }
+    if (isoDatePattern.test(evidence.lastCheckedOn ?? "") && isoDatePattern.test(evidence.lastVerifiedOn ?? "") && evidence.lastVerifiedOn > evidence.lastCheckedOn) {
+      errors.push(`Claim evidence lastVerifiedOn is later than lastCheckedOn: ${claim.id}/${evidence.sourceId}`);
+    }
+    if (evidence.status === "verified") hasVerifiedEvidence = true;
+  }
+  if (claim.status === "verified" && !hasVerifiedEvidence) {
+    errors.push(`Verified claim has no verified evidence row: ${claim.id}`);
+  }
+
+  for (const page of claim.pages ?? []) {
+    const pageText = htmlTexts.get(path.join(root, page)) ?? "";
+    for (const marker of claim.stalePublicMarkers ?? []) {
+      if (pageText.includes(marker)) errors.push(`Stale public marker for ${claim.id} remains in ${page}: ${marker}`);
+    }
+    for (const marker of claim.blockedPublicMarkers ?? []) {
+      if (pageText.toLowerCase().includes(marker.toLowerCase())) errors.push(`Blocked claim marker for ${claim.id} remains in ${page}: ${marker}`);
+    }
+  }
+}
+
+if (!sourceLedgerCsv.startsWith('"claimId"')) {
+  errors.push("Generated SOURCE_LEDGER.csv is not using the claim/source row schema.");
+}
+for (const claim of claimRegistry) {
+  if (!sourceLedgerCsv.includes(`"${claim.id}"`) || !sourceLedgerMd.includes(claim.id)) {
+    errors.push(`Generated source ledger is missing claim registry id: ${claim.id}`);
+  }
+  for (const evidence of claim.evidence) {
+    const pairKey = claim.id + "|" + evidence.sourceId;
+    if (!sourceLedgerPairs.has(pairKey)) {
+      errors.push("Generated source ledger is missing claim/source evidence " + claim.id + "/" + evidence.sourceId);
+    }
+  }
+  if (claim.status === "owner-confirmed") {
+    const ownerConfirmationIsPresent = sourceLedgerRows.slice(1).some((row) =>
+      row[ledgerClaimIdIndex] === claim.id
+      && row[ledgerOwnerDateIndex] === claim.ownerConfirmedOn
+      && row[ledgerOwnerNoteIndex] === claim.ownerConfirmationNote
+    );
+    if (!ownerConfirmationIsPresent) {
+      errors.push("Generated source ledger is missing owner-confirmation provenance: " + claim.id);
+    }
   }
 }
 

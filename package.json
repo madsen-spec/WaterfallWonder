@@ -6,11 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "node scripts/local-server.mjs",
+    "copy:edit": "node scripts/visual-copy-server.mjs --open",
+    "copy:validate": "node scripts/validate-visual-copy.mjs",
     "sync": "node scripts/sync-site.mjs",
     "sources": "node scripts/generate-source-ledger.mjs",
-    "build": "node scripts/sync-site.mjs && node scripts/generate-source-ledger.mjs && node scripts/validate-site.mjs",
+    "build": "node scripts/sync-site.mjs && node scripts/generate-source-ledger.mjs && node scripts/validate-visual-copy.mjs && node scripts/validate-site.mjs && node scripts/build-cloudflare.mjs",
     "qa:browser": "node scripts/browser-qa.mjs",
-    "validate": "node scripts/validate-site.mjs"
+    "validate": "node scripts/validate-visual-copy.mjs && node scripts/validate-site.mjs"
   },
   "engines": {
     "node": ">=18"

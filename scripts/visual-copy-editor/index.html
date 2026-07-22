@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>Visual Copy Editor | Waterfall Wonder</title>
+    <link rel="stylesheet" href="/scripts/visual-copy-editor/editor.css">
+    <script type="module" src="/scripts/visual-copy-editor/editor.js"></script>
+  </head>
+  <body class="vce-app">
+    <a class="skip-link" href="#preview-heading">Skip to page preview</a>
+
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">WW</span>
+          <div>
+            <p class="eyebrow">Waterfall Wonder</p>
+            <h1>Visual Copy Editor</h1>
+          </div>
+        </div>
+        <p class="header-note">Edit the words. Keep the page design intact.</p>
+      </header>
+
+      <div class="local-banner" role="note">
+        <span class="local-indicator" aria-hidden="true"></span>
+        <strong>Local only</strong>
+        <span>Changes stay on this computer until you deliberately publish the site.</span>
+      </div>
+
+      <main class="editor-main">
+        <section class="toolbar" aria-label="Editor controls">
+          <div class="field-group page-field">
+            <label for="page-select">Page</label>
+            <select id="page-select" disabled>
+              <option>Loading pages…</option>
+            </select>
+          </div>
+
+          <fieldset class="viewport-field">
+            <legend>Preview size</legend>
+            <div class="segmented-control" role="group" aria-label="Preview size">
+              <button class="viewport-button is-active" type="button" data-viewport="desktop" aria-pressed="true">
+                <span aria-hidden="true">▭</span> Desktop
+              </button>
+              <button class="viewport-button" type="button" data-viewport="tablet" aria-pressed="false">
+                <span aria-hidden="true">▯</span> Tablet
+              </button>
+              <button class="viewport-button" type="button" data-viewport="mobile" aria-pressed="false">
+                <span aria-hidden="true">▯</span> Mobile
+              </button>
+            </div>
+            <output id="viewport-readout" class="viewport-readout">1440 × 900</output>
+          </fieldset>
+
+          <div class="toolbar-actions">
+            <button id="reload-button" class="button button-quiet" type="button" title="Reload this page preview">
+              Reload preview
+            </button>
+            <button id="revert-button" class="button button-secondary" type="button" disabled>
+              Revert selected
+            </button>
+            <button id="save-button" class="button button-primary" type="button" disabled>
+              Save changes
+            </button>
+          </div>
+        </section>
+
+        <div class="workspace">
+          <section class="preview-panel" aria-labelledby="preview-heading">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Live page</p>
+                <h2 id="preview-heading">Click any highlighted text to edit</h2>
+              </div>
+              <p id="draft-count" class="draft-count" hidden>0 unsaved</p>
+            </div>
+
+            <div id="preview-stage" class="preview-stage" tabindex="-1">
+              <div id="viewport-scaler" class="viewport-scaler">
+                <iframe
+                  id="page-preview"
+                  class="page-preview"
+                  title="Website page preview"
+                  width="1440"
+                  height="900"
+                  sandbox="allow-scripts allow-same-origin"
+                ></iframe>
+              </div>
+              <div id="preview-loading" class="preview-loading">
+                <span class="loading-mark" aria-hidden="true"></span>
+                <p>Preparing the page preview…</p>
+              </div>
+            </div>
+
+            <div id="editor-status" class="status-bar" data-tone="working" role="status" aria-live="polite" aria-atomic="true">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="status-message">Loading the editor…</span>
+            </div>
+          </section>
+
+          <aside class="inspector" aria-labelledby="inspector-heading">
+            <div class="inspector-heading-row">
+              <div>
+                <p class="eyebrow">Selection</p>
+                <h2 id="inspector-heading">Copy details</h2>
+              </div>
+              <span id="selection-state" class="selection-state">None</span>
+            </div>
+
+            <div id="empty-inspector" class="empty-inspector">
+              <span class="empty-icon" aria-hidden="true">Aa</span>
+              <h3>Select text in the page</h3>
+              <p>Headings, paragraphs, buttons, FAQs, and footer copy can be edited directly where they appear.</p>
+            </div>
+
+            <div id="selection-inspector" class="selection-inspector" hidden>
+              <dl class="selection-meta">
+                <div>
+                  <dt>Type</dt>
+                  <dd id="selection-kind">—</dd>
+                </div>
+                <div>
+                  <dt>Revision</dt>
+                  <dd id="selection-revision">—</dd>
+                </div>
+                <div>
+                  <dt>Words</dt>
+                  <dd id="selection-words">—</dd>
+                </div>
+              </dl>
+
+              <div class="copy-readback">
+                <p class="copy-readback-label">Current text</p>
+                <p id="selection-text">—</p>
+              </div>
+
+              <p class="editing-help">
+                Type in the page preview. Use <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>S</kbd> to save, or <kbd>Esc</kbd> to revert the selected field.
+              </p>
+            </div>
+
+            <details id="validation-details" class="validation-details" hidden>
+              <summary>Latest site check</summary>
+              <pre id="validation-output"></pre>
+            </details>
+
+            <div class="governance-note">
+              <strong>Safe publishing boundary</strong>
+              <p>Saving updates the governed source and runs the site checks. It does not publish the website.</p>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
